@@ -12,8 +12,16 @@ export async function GET(request: Request) {
   if (code) {
     const supabase = createClient();
     await supabase.auth.exchangeCodeForSession(code);
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+    const { data, error } = await supabase
+  .from('profiles')
+  .insert([
+    {id: user?.id },
+  ])
   }
 
   // URL to redirect to after sign up process completes
-  return NextResponse.redirect(`${origin}/dashboard`);
+  return NextResponse.redirect(`${origin}/dashboard/`);
 }

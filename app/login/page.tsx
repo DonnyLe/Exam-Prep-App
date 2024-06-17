@@ -24,8 +24,13 @@ export default function Login({
     if (error) {
       return redirect("/login?message=Could not authenticate user");
     }
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
 
-    return redirect("/protected");
+    if(user) {
+      return redirect("/dashboard/" + user.id);
+    }
   };
 
   const signUp = async (formData: FormData) => {
@@ -43,6 +48,7 @@ export default function Login({
         emailRedirectTo: `${origin}/auth/callback`,
       },
     });
+    console.log(error)
 
     if (error) {
       return redirect("/login?message=Could not authenticate user");
