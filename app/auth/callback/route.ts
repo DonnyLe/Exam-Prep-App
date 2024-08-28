@@ -18,7 +18,6 @@ export async function GET(request: Request) {
     const { data, error } = await supabase
   .from('profiles')
   .insert([
-    {id: user?.id },
   ])
   }
 

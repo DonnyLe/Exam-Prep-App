@@ -32,7 +32,7 @@ import {
 } from "@/components/ui/select";
 
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
-import { ExamData } from "@/lib/types";
+import { ExamFormData } from "@/lib/form-types";
 
 import { Input } from "@/components/ui/input";
 import { toast } from "@/components/ui/use-toast";
@@ -43,10 +43,10 @@ export default function SubTopicForm({
   form,
 }: {
   topic_index: number;
-  form: UseFormReturn<ExamData, any, undefined>;
+  form: UseFormReturn<ExamFormData, any, undefined>;
 }) {
   const { fields, append, remove } = useFieldArray({
-    name: `topics.${topic_index}.sub_topics`,
+    name: `topics.${topic_index}.subtopics`,
     control: form.control,
   });
 
@@ -56,7 +56,7 @@ export default function SubTopicForm({
         <FormField
           key={field.id}
           control={form.control}
-          name={`topics.${topic_index}.sub_topics.${subtopics_index}.subtopic_name`}
+          name={`topics.${topic_index}.subtopics.${subtopics_index}.subtopic_name`}
           render={({ field }) => (
             <FormItem>
               <FormLabel>Subtopic {subtopics_index + 1}</FormLabel>
@@ -90,6 +90,6 @@ export default function SubTopicForm({
         {" "}
         Add subtopic
       </Button>
-      </div>
+    </div>
   );
 }

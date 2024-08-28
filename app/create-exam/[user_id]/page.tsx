@@ -7,6 +7,8 @@ import {
   CarouselNext,
   CarouselPrevious,
 } from "@/components/ui/carousel";
+import { format } from "date-fns";
+import { CalendarIcon } from "lucide-react";
 
 import Link from "next/link";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -23,6 +25,12 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
+import { Calendar } from "@/components/ui/calendar";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
 import {
   Select,
   SelectContent,
@@ -38,7 +46,7 @@ import { Input } from "@/components/ui/input";
 import { toast } from "@/components/ui/use-toast";
 import React from "react";
 import TopicForm from "../topics";
-import { examFormSchema, ExamData, Subjects } from "@/lib/types";
+import { examFormSchema, ExamFormData, Subjects } from "@/lib/form-types";
 import { addExam } from "@/app/actions";
 import { fetchSubjects } from "@/app/queries";
 
@@ -47,11 +55,12 @@ export default function SelectForm({
 }: {
   params: { user_id: string };
 }) {
-  const onSubmit = async (data: ExamData) => {
+  const onSubmit = async (data: ExamFormData) => {
+    console.log("entered 2");
     await addExam(data, params.user_id);
   };
 
-  const form = useForm<ExamData>({
+  const form = useForm<ExamFormData>({
     resolver: zodResolver(examFormSchema),
   });
   const supabase = createClient();
@@ -69,8 +78,6 @@ export default function SelectForm({
 
   let addSubject = async () => {
     if (new_subject) {
-      console.log(new_subject);
-      console.log(params.user_id);
       let subject_id = await supabase
         .from("subjects")
         .insert([{ subject_name: new_subject, user_id: params.user_id }])
@@ -78,7 +85,6 @@ export default function SelectForm({
       getSubjects();
     }
   };
-  console.log("hi");
 
   return (
     <div className="flex justify-center">
@@ -135,6 +141,42 @@ export default function SelectForm({
                 <FormDescription>
                   This is the name of your exam.
                 </FormDescription>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="exam_date"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Exam Date</FormLabel>
+                <Popover>
+                  <PopoverTrigger asChild>
+                    <FormControl>
+                      <Button variant={"outline"}>
+                        {field.value ? (
+                          format(field.value, "PPP")
+                        ) : (
+                          <span>Pick a date</span>
+                        )}
+                        <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                      </Button>
+                    </FormControl>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-auto p-0" align="start">
+                    <Calendar
+                      mode="single"
+                      selected={field.value}
+                      onSelect={field.onChange}
+                      disabled={(date) =>
+                        date > new Date() || date < new Date("1900-01-01")
+                      }
+                      initialFocus
+                    />
+                  </PopoverContent>
+                </Popover>
+                <FormDescription>The date of the exam</FormDescription>
                 <FormMessage />
               </FormItem>
             )}

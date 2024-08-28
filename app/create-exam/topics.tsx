@@ -37,12 +37,12 @@ import { Input } from "@/components/ui/input";
 import { toast } from "@/components/ui/use-toast";
 import React from "react";
 import SubTopicForm from "./subtopics";
-import { examFormSchema, ExamData } from "@/lib/types";
+import { examFormSchema, ExamFormData } from "@/lib/form-types";
 
 export default function TopicForm({
   form,
 }: {
-  form: UseFormReturn<ExamData, any, undefined>;
+  form: UseFormReturn<ExamFormData, any, undefined>;
 }) {
   const { fields, append, remove } = useFieldArray({
     name: "topics",
@@ -52,7 +52,7 @@ export default function TopicForm({
   return (
     <div className="grow overflow-y-auto flex justify-center ">
       <div className="w-11/12">
-        <Carousel> 
+        <Carousel>
           <CarouselContent>
             {fields.map((field, topic_index) => (
               <CarouselItem key={field.id}>
@@ -73,21 +73,19 @@ export default function TopicForm({
                   )}
                 />
                 <SubTopicForm topic_index={topic_index} form={form} />
-            
               </CarouselItem>
             ))}
-           
           </CarouselContent>
           <CarouselPrevious />
           <CarouselNext />
         </Carousel>
-      <Button
-        type="button"
-        onClick={() => append({ topic_name: "", sub_topics: [] })}
-      >
-        {" "}
-        Add Topic
-      </Button>
+        <Button
+          type="button"
+          onClick={() => append({ topic_name: "", subtopics: [] })}
+        >
+          {" "}
+          Add Topic
+        </Button>
       </div>
     </div>
   );
