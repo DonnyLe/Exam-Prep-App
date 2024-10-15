@@ -1,17 +1,12 @@
-export type FullSchedule = Map<string, ExamGoal[]>;
-export type StudyMaterialConfidenceUpdates = {
-  studyMaterialName: string;
-  currentConfidence: number | null;
+export type FullSchedule = Map<string, ConfidenceUpdates[]>;
+
+export type ConfidenceUpdates = {
+  studyMaterial: StudyMaterial;
   confidenceIncrease: number;
-  date: string;
+  newDate: string;
+  childrenConfidenceUpdates: Map<string, ConfidenceUpdates> | null;
 };
-export type ExamGoal = {
-  examId: string;
-  examName: string;
-  totalConfidenceIncrease: number;
-  allStudyMaterialGoals: Map<string, StudyMaterialConfidenceUpdates>;
-  currentConfidence: number;
-};
+
 export type StudyMaterial = {
   name: string;
   id: string;
@@ -19,7 +14,7 @@ export type StudyMaterial = {
   confidence_goal?: number | null;
   priority: number | null;
   exam_date?: string | null;
-  last_studied: string | null;
+  last_studied: string;
   created_at?: string | null;
   topics?: StudyMaterial[];
   subtopics?: StudyMaterial[];
@@ -41,15 +36,12 @@ export type Line = {
   endDayNum: number;
   examId: string;
 };
-export type updateEntryTablesType = {
-  updateFunction: (
-    childEntryID: string,
-    parentEntryID: string,
-    studyMaterial: StudyMaterial
-  ) => void;
-  insertFunction: (
-    studyMaterial: StudyMaterial,
-    confidenceChange: number
-  ) => Promise<string>;
-};
-export type updateMainTablesType = (studyMaterial: StudyMaterial) => void;
+export type insertEntryTablesType = (
+  studyMaterial: StudyMaterial,
+  confidenceChange: number,
+  date: string
+) => Promise<string>;
+
+export type updateMainTablesType = (
+  studyMaterial: StudyMaterial
+) => Promise<void>;

@@ -3,16 +3,14 @@ import { createClient } from "@/utils/supabase/server";
 
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
-import {
-  ConfidenceData,
-  StudyType,
-} from "./initial-confidence-form/[user_id]/page";
+
 import {
   getStudyMaterialInfo,
+  printExams,
   updateExamData,
 } from "./schedule/algorithm/generateSchedule";
 import { StudyMaterial } from "@/lib/algorithm-types";
-import { StudyMaterialConfidenceUpdates } from "@/lib/algorithm-types";
+import { ConfidenceUpdates } from "@/lib/algorithm-types";
 
 import { v4 as uuidv4 } from "uuid";
 import { ExamFormData } from "@/lib/form-types";
@@ -48,6 +46,7 @@ export async function addExam(data: ExamFormData, user_id: string) {
             {
               name: data.topics[i].subtopics[j].subtopic_name,
               topic_id: topics[0].id,
+              last_studied: new Date().toISOString().split("T")[0],
             },
           ]);
         }
@@ -65,36 +64,44 @@ export async function addExam(data: ExamFormData, user_id: string) {
 }
 
 export async function updateConfidenceScores(
-  data: ExamData,
+  data: ExamData[],
   date: string,
-  updatedData: Map<string, Map<string, StudyMaterialConfidenceUpdates>>
+  dataChanges: Map<string, ConfidenceUpdates>,
+  user_id: string
 ) {
   const supabase = createClient();
   let updateSupabase = async (studyMaterial: StudyMaterial) => {
     let res = getStudyMaterialInfo(studyMaterial);
     if (res) {
+      console.log(res.subStudyMaterial)
       const { data: topics, error } = await supabase
         .from(res.studyMaterialType)
         .update({
           confidence: studyMaterial.confidence,
           last_studied: studyMaterial.last_studied,
           priority: studyMaterial.priority,
-        });
+        })
+        .eq("id", studyMaterial.id);
     }
+    return;
   };
 
   let insertIntoEntryTables = async (
     studyMaterial: StudyMaterial,
-    confidenceChange: number
+    confidenceChange: number,
+    date: string
   ) => {
     let res = getStudyMaterialInfo(studyMaterial);
     switch (res.studyMaterialType) {
       case "exams":
+
         let res2 = await supabase
           .from("studied_exam_entry")
           .insert({
             confidence_increase: confidenceChange,
             exam_id: studyMaterial.id,
+            user_id: user_id,
+            date_studied: date,
           })
           .select("id");
         return res2.data![0].id;
@@ -105,6 +112,7 @@ export async function updateConfidenceScores(
           .insert({
             confidence_increase: confidenceChange,
             topic_id: studyMaterial.id,
+            date_studied: date,
           })
           .select("id");
         return res3.data![0].id;
@@ -114,54 +122,23 @@ export async function updateConfidenceScores(
           .insert({
             confidence_increase: confidenceChange,
             subtopic_id: studyMaterial.id,
+            date_studied: date,
           })
-          .select("id");
-
+          .select();
         return res4.data![0].id;
       default:
         return "";
     }
   };
 
-  let updateInEntryTables = async (
-    childEntryId: string,
-    parentEntryId: string,
-    studyMaterial: StudyMaterial
-  ) => {
-    let res = getStudyMaterialInfo(studyMaterial);
-    switch (res.studyMaterialType) {
-      case "topics":
-        await supabase
-          .from("studied_subtopic_entry")
-          .update({
-            studied_topic_entry_id: parentEntryId,
-          })
-          .eq("id", childEntryId);
-
-      case "exams":
-        await supabase
-          .from("studied_topic_entry")
-          .update({
-            studied_exam_entry_id: parentEntryId,
-          })
-          .eq("id", childEntryId);
-
-      default:
-        return "";
-    }
-  };
-
   for (let i = 0; i < data.length; i++) {
-    let examUpdates = updatedData.get(data[i].id);
+    let examUpdates = dataChanges.get(data[i].id);
     if (examUpdates) {
-      const exam_uuid = uuidv4();
-      updateExamData(data[i], data[i].created_at, date, examUpdates, {
+      updateExamData(data[i], date, examUpdates, {
         updateMainTables: updateSupabase,
-        updateEntryTables: {
-          updateFunction: updateInEntryTables,
-          insertFunction: insertIntoEntryTables,
-        },
+        insertEntryTables: insertIntoEntryTables,
       });
     }
   }
+  redirect(`/dashboard/${user_id}`)
 }

@@ -35,14 +35,14 @@ const englishID = randomUUID();
 
 const userID = randomUUID();
 
-export const sampleExamData: ExamData = [
+export const sampleExamData: ExamData[] = [
   {
     confidence: null,
     confidence_goal: 9,
     created_at: mathExamCreatedDate,
     exam_date: "2024-08-28",
     name: "Math Exam",
-    last_studied: null,
+    last_studied: mathExamCreatedDate,
     priority: null,
     id: examIdMath,
     subject_id: mathID,
@@ -55,6 +55,7 @@ export const sampleExamData: ExamData = [
         last_studied: mathExamCreatedDate,
         priority: null,
         name: "Math Topic 1",
+        order: 0,
         subtopics: [
           {
             confidence: 5,
@@ -63,6 +64,7 @@ export const sampleExamData: ExamData = [
             priority: null,
             name: "Math Subtopic 1.1",
             topic_id: topicIdMath1,
+            order: 0,
           },
           {
             confidence: 6,
@@ -71,6 +73,7 @@ export const sampleExamData: ExamData = [
             priority: null,
             name: "Math Subtopic 1.2",
             topic_id: topicIdMath1,
+            order: 0,
           },
           {
             confidence: null,
@@ -79,6 +82,7 @@ export const sampleExamData: ExamData = [
             priority: null,
             name: "Math Subtopic 1.3",
             topic_id: topicIdMath1,
+            order: 0,
           },
           {
             confidence: 7,
@@ -87,6 +91,7 @@ export const sampleExamData: ExamData = [
             priority: null,
             name: "Math Subtopic 1.4",
             topic_id: topicIdMath1,
+            order: 0,
           },
           {
             confidence: 3,
@@ -95,6 +100,7 @@ export const sampleExamData: ExamData = [
             priority: null,
             name: "Math Subtopic 1.5",
             topic_id: topicIdMath1,
+            order: 0,
           },
         ],
       },
@@ -105,6 +111,7 @@ export const sampleExamData: ExamData = [
         last_studied: mathExamCreatedDate,
         priority: null,
         name: "Math Topic 2",
+        order: 0,
         subtopics: [
           {
             confidence: null,
@@ -113,6 +120,7 @@ export const sampleExamData: ExamData = [
             priority: null,
             name: "Math Subtopic 2.1",
             topic_id: topicIdMath2,
+            order: 0,
           },
           {
             confidence: 4,
@@ -121,6 +129,7 @@ export const sampleExamData: ExamData = [
             priority: null,
             name: "Math Subtopic 2.2",
             topic_id: topicIdMath2,
+            order: 0,
           },
           {
             confidence: 2,
@@ -129,6 +138,7 @@ export const sampleExamData: ExamData = [
             priority: null,
             name: "Math Subtopic 2.3",
             topic_id: topicIdMath2,
+            order: 0,
           },
           {
             confidence: 7,
@@ -137,6 +147,7 @@ export const sampleExamData: ExamData = [
             priority: null,
             name: "Math Subtopic 2.4",
             topic_id: topicIdMath2,
+            order: 0,
           },
           {
             confidence: null,
@@ -145,6 +156,7 @@ export const sampleExamData: ExamData = [
             priority: null,
             name: "Math Subtopic 2.5",
             topic_id: topicIdMath2,
+            order: 0,
           },
         ],
       },
@@ -155,6 +167,8 @@ export const sampleExamData: ExamData = [
         last_studied: mathExamCreatedDate,
         priority: null,
         name: "Math Topic 3",
+        order: 0,
+
         subtopics: [
           {
             confidence: 1,
@@ -163,6 +177,7 @@ export const sampleExamData: ExamData = [
             priority: null,
             name: "Math Subtopic 3.1",
             topic_id: topicIdMath3,
+            order: 0,
           },
           {
             confidence: null,
@@ -171,6 +186,7 @@ export const sampleExamData: ExamData = [
             priority: null,
             name: "Math Subtopic 3.2",
             topic_id: topicIdMath3,
+            order: 0,
           },
           {
             confidence: 8,
@@ -179,6 +195,7 @@ export const sampleExamData: ExamData = [
             priority: null,
             name: "Math Subtopic 3.3",
             topic_id: topicIdMath3,
+            order: 0,
           },
           {
             confidence: 2,
@@ -187,6 +204,7 @@ export const sampleExamData: ExamData = [
             priority: null,
             name: "Math Subtopic 3.4",
             topic_id: topicIdMath3,
+            order: 0,
           },
           {
             confidence: null,
@@ -195,6 +213,7 @@ export const sampleExamData: ExamData = [
             priority: null,
             name: "Math Subtopic 3.5",
             topic_id: topicIdMath3,
+            order: 0,
           },
         ],
       },
@@ -205,6 +224,8 @@ export const sampleExamData: ExamData = [
         last_studied: mathExamCreatedDate,
         priority: null,
         name: "Math Topic 4",
+        order: 0,
+
         subtopics: [
           {
             confidence: 4,
@@ -213,6 +234,7 @@ export const sampleExamData: ExamData = [
             priority: null,
             name: "Math Subtopic 4.1",
             topic_id: topicIdMath4,
+            order: 0,
           },
           {
             confidence: 5,
@@ -221,6 +243,7 @@ export const sampleExamData: ExamData = [
             priority: null,
             name: "Math Subtopic 4.2",
             topic_id: topicIdMath4,
+            order: 0,
           },
           {
             confidence: 1,
@@ -229,6 +252,7 @@ export const sampleExamData: ExamData = [
             priority: null,
             name: "Math Subtopic 4.3",
             topic_id: topicIdMath4,
+            order: 0,
           },
           {
             confidence: null,
@@ -237,6 +261,7 @@ export const sampleExamData: ExamData = [
             priority: null,
             name: "Math Subtopic 4.4",
             topic_id: topicIdMath4,
+            order: 0,
           },
           {
             confidence: 3,
@@ -245,6 +270,7 @@ export const sampleExamData: ExamData = [
             priority: null,
             name: "Math Subtopic 4.5",
             topic_id: topicIdMath4,
+            order: 0,
           },
         ],
       },
@@ -255,6 +281,8 @@ export const sampleExamData: ExamData = [
         last_studied: mathExamCreatedDate,
         priority: null,
         name: "Math Topic 5",
+        order: 0,
+
         subtopics: [
           {
             confidence: 9,
@@ -263,6 +291,7 @@ export const sampleExamData: ExamData = [
             priority: null,
             name: "Math Subtopic 5.1",
             topic_id: topicIdMath5,
+            order: 0,
           },
           {
             confidence: 7,
@@ -271,6 +300,7 @@ export const sampleExamData: ExamData = [
             priority: null,
             name: "Math Subtopic 5.2",
             topic_id: topicIdMath5,
+            order: 0,
           },
           {
             confidence: null,
@@ -279,6 +309,7 @@ export const sampleExamData: ExamData = [
             priority: null,
             name: "Math Subtopic 5.3",
             topic_id: topicIdMath5,
+            order: 0,
           },
           {
             confidence: 8,
@@ -287,6 +318,7 @@ export const sampleExamData: ExamData = [
             priority: null,
             name: "Math Subtopic 5.4",
             topic_id: topicIdMath5,
+            order: 0,
           },
           {
             confidence: null,
@@ -295,6 +327,7 @@ export const sampleExamData: ExamData = [
             priority: null,
             name: "Math Subtopic 5.5",
             topic_id: topicIdMath5,
+            order: 0,
           },
         ],
       },
@@ -307,10 +340,11 @@ export const sampleExamData: ExamData = [
     exam_date: "2024-09-04",
     name: "English Exam",
     id: examIdEnglish,
-    last_studied: null,
+    last_studied: englishExamCreatedDate,
     priority: null,
     subject_id: englishID,
     user_id: userID,
+
     topics: [
       {
         confidence: null,
@@ -319,6 +353,8 @@ export const sampleExamData: ExamData = [
         last_studied: englishExamCreatedDate,
         priority: null,
         name: "English Topic 1",
+        order: 0,
+
         subtopics: [],
       },
       {
@@ -328,6 +364,8 @@ export const sampleExamData: ExamData = [
         last_studied: englishExamCreatedDate,
         priority: null,
         name: "English Topic 2",
+        order: 0,
+
         subtopics: [
           {
             confidence: 7,
@@ -336,6 +374,7 @@ export const sampleExamData: ExamData = [
             priority: null,
             name: "English Subtopic 2.1",
             topic_id: topicIdEnglish2,
+            order: 0,
           },
         ],
       },
@@ -346,6 +385,8 @@ export const sampleExamData: ExamData = [
         last_studied: englishExamCreatedDate,
         priority: null,
         name: "English Topic 3",
+        order: 0,
+
         subtopics: [
           {
             confidence: null,
@@ -354,6 +395,7 @@ export const sampleExamData: ExamData = [
             priority: null,
             name: "English Subtopic 3.1",
             topic_id: topicIdEnglish3,
+            order: 0,
           },
           {
             confidence: 5,
@@ -362,6 +404,7 @@ export const sampleExamData: ExamData = [
             priority: null,
             name: "English Subtopic 3.2",
             topic_id: topicIdEnglish3,
+            order: 0,
           },
           {
             confidence: 6,
@@ -370,6 +413,7 @@ export const sampleExamData: ExamData = [
             priority: null,
             name: "English Subtopic 3.3",
             topic_id: topicIdEnglish3,
+            order: 0,
           },
           {
             confidence: 2,
@@ -378,6 +422,7 @@ export const sampleExamData: ExamData = [
             priority: null,
             name: "English Subtopic 3.4",
             topic_id: topicIdEnglish3,
+            order: 0,
           },
           {
             confidence: 3,
@@ -386,6 +431,7 @@ export const sampleExamData: ExamData = [
             priority: null,
             name: "English Subtopic 3.5",
             topic_id: topicIdEnglish3,
+            order: 0,
           },
         ],
       },
@@ -397,6 +443,7 @@ export const sampleExamData: ExamData = [
         priority: null,
         name: "English Topic 4",
         subtopics: [],
+        order: 0,
       },
       {
         confidence: null,
@@ -405,6 +452,8 @@ export const sampleExamData: ExamData = [
         last_studied: englishExamCreatedDate,
         priority: null,
         name: "English Topic 5",
+        order: 0,
+
         subtopics: [
           {
             confidence: null,
@@ -413,6 +462,7 @@ export const sampleExamData: ExamData = [
             priority: null,
             name: "English Subtopic 5.1",
             topic_id: topicIdEnglish5,
+            order: 0,
           },
           {
             confidence: 2,
@@ -421,6 +471,7 @@ export const sampleExamData: ExamData = [
             priority: null,
             name: "English Subtopic 5.2",
             topic_id: topicIdEnglish5,
+            order: 0,
           },
           {
             confidence: 5,
@@ -428,6 +479,8 @@ export const sampleExamData: ExamData = [
             last_studied: englishExamCreatedDate,
             priority: null,
             name: "English Subtopic 5.3",
+            order: 0,
+
             topic_id: topicIdEnglish5,
           },
           {
@@ -437,6 +490,7 @@ export const sampleExamData: ExamData = [
             priority: null,
             name: "English Subtopic 5.4",
             topic_id: topicIdEnglish5,
+            order: 0,
           },
           {
             confidence: 7,
@@ -445,6 +499,7 @@ export const sampleExamData: ExamData = [
             priority: null,
             name: "English Subtopic 5.5",
             topic_id: topicIdEnglish5,
+            order: 0,
           },
         ],
       },
@@ -455,12 +510,13 @@ export const sampleExamData: ExamData = [
     confidence_goal: 9,
     created_at: physicsExamCreatedDate,
     exam_date: "2024-08-25",
-    last_studied: null,
+    last_studied: physicsExamCreatedDate,
     priority: null,
     name: "Physics Exam",
     id: examIdPhysics,
     subject_id: physicsID,
     user_id: userID,
+
     topics: [
       {
         confidence: null,
@@ -469,6 +525,8 @@ export const sampleExamData: ExamData = [
         last_studied: physicsExamCreatedDate,
         priority: null,
         name: "Physics Topic 1",
+        order: 0,
+
         subtopics: [
           {
             confidence: 9,
@@ -477,6 +535,7 @@ export const sampleExamData: ExamData = [
             priority: null,
             name: "Physics Subtopic 1.1",
             topic_id: topicIdPhysics1,
+            order: 0,
           },
           {
             confidence: 8,
@@ -485,6 +544,7 @@ export const sampleExamData: ExamData = [
             priority: null,
             name: "Physics Subtopic 1.2",
             topic_id: topicIdPhysics1,
+            order: 0,
           },
           {
             confidence: null,
@@ -493,6 +553,7 @@ export const sampleExamData: ExamData = [
             priority: null,
             name: "Physics Subtopic 1.3",
             topic_id: topicIdPhysics1,
+            order: 0,
           },
           {
             confidence: 6,
@@ -501,6 +562,7 @@ export const sampleExamData: ExamData = [
             priority: null,
             name: "Physics Subtopic 1.4",
             topic_id: topicIdPhysics1,
+            order: 0,
           },
           {
             confidence: 4,
@@ -509,6 +571,7 @@ export const sampleExamData: ExamData = [
             priority: null,
             name: "Physics Subtopic 1.5",
             topic_id: topicIdPhysics1,
+            order: 0,
           },
         ],
       },
@@ -518,6 +581,7 @@ export const sampleExamData: ExamData = [
         id: topicIdPhysics2,
         last_studied: physicsExamCreatedDate,
         priority: null,
+        order: 0,
         name: "Physics Topic 2",
         subtopics: [
           {
@@ -527,6 +591,7 @@ export const sampleExamData: ExamData = [
             priority: null,
             name: "Physics Subtopic 2.1",
             topic_id: topicIdPhysics2,
+            order: 0,
           },
           {
             confidence: 5,
@@ -535,6 +600,7 @@ export const sampleExamData: ExamData = [
             priority: null,
             name: "Physics Subtopic 2.2",
             topic_id: topicIdPhysics2,
+            order: 0,
           },
           {
             confidence: 2,
@@ -543,6 +609,7 @@ export const sampleExamData: ExamData = [
             priority: null,
             name: "Physics Subtopic 2.3",
             topic_id: topicIdPhysics2,
+            order: 0,
           },
           {
             confidence: null,
@@ -551,6 +618,7 @@ export const sampleExamData: ExamData = [
             priority: null,
             name: "Physics Subtopic 2.4",
             topic_id: topicIdPhysics2,
+            order: 0,
           },
           {
             confidence: 1,
@@ -559,6 +627,7 @@ export const sampleExamData: ExamData = [
             priority: null,
             name: "Physics Subtopic 2.5",
             topic_id: topicIdPhysics2,
+            order: 0,
           },
         ],
       },
@@ -569,6 +638,7 @@ export const sampleExamData: ExamData = [
         last_studied: physicsExamCreatedDate,
         priority: null,
         name: "Physics Topic 3",
+        order: 0,
         subtopics: [
           {
             confidence: 5,
@@ -576,6 +646,8 @@ export const sampleExamData: ExamData = [
             last_studied: physicsExamCreatedDate,
             priority: null,
             name: "Physics Subtopic 3.1",
+            order: 0,
+
             topic_id: topicIdPhysics3,
           },
           {
@@ -584,6 +656,8 @@ export const sampleExamData: ExamData = [
             last_studied: physicsExamCreatedDate,
             priority: null,
             name: "Physics Subtopic 3.2",
+            order: 0,
+
             topic_id: topicIdPhysics3,
           },
           {
@@ -593,6 +667,7 @@ export const sampleExamData: ExamData = [
             priority: null,
             name: "Physics Subtopic 3.3",
             topic_id: topicIdPhysics3,
+            order: 0,
           },
           {
             confidence: 1,
@@ -600,6 +675,8 @@ export const sampleExamData: ExamData = [
             last_studied: physicsExamCreatedDate,
             priority: null,
             name: "Physics Subtopic 3.4",
+            order: 0,
+
             topic_id: topicIdPhysics3,
           },
           {
@@ -609,6 +686,7 @@ export const sampleExamData: ExamData = [
             priority: null,
             name: "Physics Subtopic 3.5",
             topic_id: topicIdPhysics3,
+            order: 0,
           },
         ],
       },
@@ -618,6 +696,8 @@ export const sampleExamData: ExamData = [
         id: topicIdPhysics4,
         last_studied: physicsExamCreatedDate,
         priority: null,
+        order: 0,
+
         name: "Physics Topic 4",
         subtopics: [
           {
@@ -625,6 +705,8 @@ export const sampleExamData: ExamData = [
             id: randomUUID(),
             last_studied: physicsExamCreatedDate,
             priority: null,
+            order: 0,
+
             name: "Physics Subtopic 4.1",
             topic_id: topicIdPhysics4,
           },
@@ -634,6 +716,8 @@ export const sampleExamData: ExamData = [
             last_studied: physicsExamCreatedDate,
             priority: null,
             name: "Physics Subtopic 4.2",
+            order: 0,
+
             topic_id: topicIdPhysics4,
           },
           {
@@ -642,6 +726,8 @@ export const sampleExamData: ExamData = [
             last_studied: physicsExamCreatedDate,
             priority: null,
             name: "Physics Subtopic 4.3",
+            order: 0,
+
             topic_id: topicIdPhysics4,
           },
           {
@@ -651,6 +737,7 @@ export const sampleExamData: ExamData = [
             priority: null,
             name: "Physics Subtopic 4.4",
             topic_id: topicIdPhysics4,
+            order: 0,
           },
           {
             confidence: 7,
@@ -658,6 +745,8 @@ export const sampleExamData: ExamData = [
             last_studied: physicsExamCreatedDate,
             priority: null,
             name: "Physics Subtopic 4.5",
+            order: 0,
+
             topic_id: topicIdPhysics4,
           },
         ],
@@ -669,6 +758,8 @@ export const sampleExamData: ExamData = [
         last_studied: physicsExamCreatedDate,
         priority: null,
         name: "Physics Topic 5",
+        order: 0,
+
         subtopics: [
           {
             confidence: null,
@@ -676,6 +767,8 @@ export const sampleExamData: ExamData = [
             last_studied: physicsExamCreatedDate,
             priority: null,
             name: "Physics Subtopic 5.1",
+            order: 0,
+
             topic_id: topicIdPhysics5,
           },
           {
@@ -684,6 +777,8 @@ export const sampleExamData: ExamData = [
             last_studied: physicsExamCreatedDate,
             priority: null,
             name: "Physics Subtopic 5.2",
+            order: 0,
+
             topic_id: topicIdPhysics5,
           },
           {
@@ -691,6 +786,8 @@ export const sampleExamData: ExamData = [
             id: randomUUID(),
             last_studied: physicsExamCreatedDate,
             priority: null,
+            order: 0,
+
             name: "Physics Subtopic 5.3",
             topic_id: topicIdPhysics5,
           },
@@ -701,6 +798,7 @@ export const sampleExamData: ExamData = [
             priority: null,
             name: "Physics Subtopic 5.4",
             topic_id: topicIdPhysics5,
+            order: 0,
           },
           {
             confidence: 3,
@@ -708,6 +806,8 @@ export const sampleExamData: ExamData = [
             last_studied: physicsExamCreatedDate,
             priority: null,
             name: "Physics Subtopic 5.5",
+            order: 0,
+
             topic_id: topicIdPhysics5,
           },
         ],

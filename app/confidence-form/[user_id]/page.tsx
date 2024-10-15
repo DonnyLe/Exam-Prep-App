@@ -1,8 +1,9 @@
-export const revalidate = 0
+export const revalidate = 0;
 
 import { createClient } from "@/utils/supabase/client";
-import ExamConfidenceForm from "../exams";
 import { ExamData } from "@/app/dashboard/[user_id]/page";
+import { ConfidenceUpdates } from "@/lib/algorithm-types";
+import ConfidenceForm from "../ConfidenceForm";
 
 export enum StudyType {
   Topic,
@@ -19,8 +20,6 @@ export const supabaseQuery = supabase
   .from("exams")
   .select("*, subjects(*), topics(*, subtopics(*))");
 
- 
-
 export default async function Page({
   params,
 }: {
@@ -28,7 +27,16 @@ export default async function Page({
 }) {
   const { data, error } = await supabaseQuery;
 
+  
   if (error) throw error;
-  const allData: ExamData = data;
-  return <ExamConfidenceForm data={allData} user_id={params.user_id} />;
+  const allExams: ExamData[] = data;
+  return (
+    <div>
+      {allExams.map((exam, key) => {
+        return (
+          <ConfidenceForm allExams={allExams} user_id={params.user_id}/>
+        );
+      })}
+    </div>
+  );
 }

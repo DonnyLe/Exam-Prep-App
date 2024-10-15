@@ -10,10 +10,12 @@ import { Database } from "@/lib/supabase-types";
 import { createClient } from "@/utils/supabase/client";
 import DailyPlanCarousel from "../DailyPlanCarousel";
 import { CreateExamButton } from "@/components/CreateExamButton";
-import { updateExamData } from "@/app/schedule/algorithm/generateSchedule";
-import { FullSchedule } from "@/lib/algorithm-types";
+import {
+  generateFullSchedule,
+  updateExamData,
+} from "@/app/schedule/algorithm/generateSchedule";
 import { useQuery } from "@tanstack/react-query";
-
+import { FullSchedule } from "@/lib/algorithm-types";
 // import { calculateSchedule } from "@/utils/generateSchedule";
 
 const supabase = createClient();
@@ -22,11 +24,11 @@ export const examQuery = supabase
   .select("*, topics(*, subtopics(*))");
 
 export const subjectQuery = supabase.from("subtopics").select("*");
-export type ExamData = QueryData<typeof examQuery>;
+export type ExamData = QueryData<typeof examQuery>[number];
 
 export type SubjectData = QueryData<typeof subjectQuery>;
 
-export type TopicData = ExamData[number]["topics"][number];
+export type TopicData = ExamData["topics"][number];
 export type SubtopicData = TopicData["subtopics"][number];
 
 export default async function Dashboard({
@@ -37,17 +39,13 @@ export default async function Dashboard({
   const { data: examdata, error } = await examQuery;
   if (error) throw error;
 
-  let allData: ExamData = examdata;
-  console.log(allData);
+  let allData: ExamData[] = await examdata;
 
-  let res = await fetch(`http://localhost:3000/schedule/full`, {
-    method: "POST",
-    body: JSON.stringify(allData),
-    cache: "no-store",
-  });
-  let data: FullSchedule = await res.json();
-  console.log(data);
-
+  let schedule: FullSchedule = await generateFullSchedule(
+    allData,
+    new Date().toISOString().split("T")[0]
+  );
+  console.log(schedule)
   return (
     <div className="w-full">
       <nav className="w-full flex justify-center border-b border-b-foreground/10 h-16">
@@ -57,9 +55,9 @@ export default async function Dashboard({
       </nav>
       <div className="flex flex-col">
         <h1 className="text-6xl bg-primary-foreground"></h1>
-
+        <h1>Welcome Back Donny!</h1>
         <div className="grid grid-cols-2 justify-items-center h-screen">
-          <DailyPlanCarousel />
+          <DailyPlanCarousel full_schedule={schedule} />
           <div className="flex flex-col h-full justify-center">
             <CreateExamButton user_id={params.user_id} />
             <Button>Add Study Session </Button>

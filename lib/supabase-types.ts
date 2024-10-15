@@ -1,4 +1,3 @@
-
 export type Json =
   | string
   | number
@@ -17,7 +16,7 @@ export type Database = {
           created_at: string
           exam_date: string
           id: string
-          last_studied: string | null
+          last_studied: string
           name: string
           priority: number | null
           subject_id: string
@@ -29,7 +28,7 @@ export type Database = {
           created_at?: string
           exam_date: string
           id?: string
-          last_studied?: string | null
+          last_studied?: string
           name: string
           priority?: number | null
           subject_id: string
@@ -41,7 +40,7 @@ export type Database = {
           created_at?: string
           exam_date?: string
           id?: string
-          last_studied?: string | null
+          last_studied?: string
           name?: string
           priority?: number | null
           subject_id?: string
@@ -79,21 +78,21 @@ export type Database = {
       studied_exam_entry: {
         Row: {
           confidence_increase: number
-          created_at: string
+          date_studied: string
           exam_id: string | null
           id: string
           user_id: string | null
         }
         Insert: {
           confidence_increase: number
-          created_at?: string
+          date_studied: string
           exam_id?: string | null
           id?: string
           user_id?: string | null
         }
         Update: {
           confidence_increase?: number
-          created_at?: string
+          date_studied?: string
           exam_id?: string | null
           id?: string
           user_id?: string | null
@@ -118,33 +117,23 @@ export type Database = {
       studied_subtopic_entry: {
         Row: {
           confidence_increase: number | null
-          created_at: string
+          date_studied: string | null
           id: string
-          studied_topic_entry_id: string | null
           subtopic_id: string | null
         }
         Insert: {
           confidence_increase?: number | null
-          created_at?: string
+          date_studied?: string | null
           id?: string
-          studied_topic_entry_id?: string | null
           subtopic_id?: string | null
         }
         Update: {
           confidence_increase?: number | null
-          created_at?: string
+          date_studied?: string | null
           id?: string
-          studied_topic_entry_id?: string | null
           subtopic_id?: string | null
         }
         Relationships: [
-          {
-            foreignKeyName: "studied_subtopic_entry_studied_topic_entry_id_fkey"
-            columns: ["studied_topic_entry_id"]
-            isOneToOne: false
-            referencedRelation: "studied_topic_entry"
-            referencedColumns: ["id"]
-          },
           {
             foreignKeyName: "studied_subtopic_entry_subtopic_id_fkey"
             columns: ["subtopic_id"]
@@ -157,33 +146,23 @@ export type Database = {
       studied_topic_entry: {
         Row: {
           confidence_increase: number
-          created_at: string
+          date_studied: string
           id: string
-          studied_exam_entry_id: string | null
           topic_id: string | null
         }
         Insert: {
           confidence_increase: number
-          created_at?: string
+          date_studied: string
           id?: string
-          studied_exam_entry_id?: string | null
           topic_id?: string | null
         }
         Update: {
           confidence_increase?: number
-          created_at?: string
+          date_studied?: string
           id?: string
-          studied_exam_entry_id?: string | null
           topic_id?: string | null
         }
         Relationships: [
-          {
-            foreignKeyName: "studied_topic_entry_studied_exam_entry_id_fkey"
-            columns: ["studied_exam_entry_id"]
-            isOneToOne: false
-            referencedRelation: "studied_exam_entry"
-            referencedColumns: ["id"]
-          },
           {
             foreignKeyName: "studied_topic_entry_topic_id_fkey"
             columns: ["topic_id"]
@@ -223,24 +202,27 @@ export type Database = {
         Row: {
           confidence: number | null
           id: string
-          last_studied: string | null
+          last_studied: string
           name: string
+          order: number
           priority: number | null
           topic_id: string
         }
         Insert: {
           confidence?: number | null
           id?: string
-          last_studied?: string | null
+          last_studied: string
           name: string
+          order?: number
           priority?: number | null
           topic_id: string
         }
         Update: {
           confidence?: number | null
           id?: string
-          last_studied?: string | null
+          last_studied?: string
           name?: string
+          order?: number
           priority?: number | null
           topic_id?: string
         }
@@ -259,24 +241,27 @@ export type Database = {
           confidence: number | null
           exam_id: string
           id: string
-          last_studied: string | null
+          last_studied: string
           name: string
+          order: number
           priority: number | null
         }
         Insert: {
           confidence?: number | null
           exam_id: string
           id?: string
-          last_studied?: string | null
+          last_studied?: string
           name: string
+          order?: number
           priority?: number | null
         }
         Update: {
           confidence?: number | null
           exam_id?: string
           id?: string
-          last_studied?: string | null
+          last_studied?: string
           name?: string
+          order?: number
           priority?: number | null
         }
         Relationships: [

@@ -1,15 +1,16 @@
+export const revalidate = 0;
+
 import { ExamData } from "@/app/dashboard/[user_id]/page";
 import { Heap } from "heap-js";
 import { correlation } from "@mathigon/fermat";
 import {
   Combination,
-  ExamGoal,
   FullSchedule,
   Function,
   Line,
   StudyMaterial,
-  StudyMaterialConfidenceUpdates,
-  updateEntryTablesType,
+  ConfidenceUpdates as ConfidenceUpdate,
+  insertEntryTablesType,
   updateMainTablesType,
 } from "@/lib/algorithm-types";
 
@@ -25,37 +26,32 @@ export var studyingEndDate = "";
  * @returns an array of ExamGoal
  */
 export function generateNextDaySchedule(
-  studyMaterial: ExamData,
+  studyMaterial: ExamData[],
   selectedDate: string,
   studyTrajectoryLines: Line[],
   usePredictedData?: boolean
 ) {
-  let allExamsDailyGoals: ExamGoal[] = [];
+  let allExamsDailyGoals: ConfidenceUpdate[] = [];
 
   for (let i = 0; i < studyTrajectoryLines.length; i++) {
     // * make more efficient if convert studyMaterial into a dictionary for faster getting
     let exam = studyMaterial.find(
       (studyMaterial) => studyMaterial.id == studyTrajectoryLines[i].examId
     );
-    let currentDayIndex = daysBetween(selectedDate, studyingStartDate);
+    let currentDayIndex = daysBetween(studyingStartDate, selectedDate);
     if (
       currentDayIndex >= daysBetween(exam!.created_at!, studyingStartDate) &&
-      currentDayIndex < daysBetween(exam!.exam_date!, studyingStartDate)
+      currentDayIndex < daysBetween(studyingStartDate, exam!.exam_date!)
     ) {
       let confidenceChange =
         studyTrajectoryLines[i].fnc(currentDayIndex + 1) -
-        (usePredictedData
-          ? studyTrajectoryLines[i].fnc(currentDayIndex)
-          : exam!.confidence!);
+        studyTrajectoryLines[i].fnc(currentDayIndex);
 
-      let examDailyGoals: ExamGoal = getNextDayExamGoal(
+      let examDailyGoals: ConfidenceUpdate = getNextDayExamGoal(
         exam!,
         confidenceChange,
         selectedDate
       );
-      examDailyGoals.examId = exam!.id;
-      examDailyGoals.examName = exam!.name;
-      examDailyGoals.currentConfidence = exam!.confidence!;
 
       allExamsDailyGoals.push(examDailyGoals);
     }
@@ -70,33 +66,33 @@ export function generateNextDaySchedule(
  * @param startDate
  * @returns
  */
-export function generateFullSchedule(allData: ExamData, startDate: string) {
+export async function generateFullSchedule(
+  allData: ExamData[],
+  startDate: string
+) {
   const data = structuredClone(allData);
-  let res: FullSchedule = new Map<string, ExamGoal[]>();
+  let res: FullSchedule = new Map<string, ConfidenceUpdate[]>();
 
+  updateGlobalDates(data, startDate);
   let datesList: string[] = getDatesBetween(startDate, studyingEndDate);
-
-  for (let i = 0; i < datesList.length; i++) {
+  for (let i = 0; i < datesList.length - 1; i++) {
     let studyTrajectoryLines = getExamConfidenceFunctions(
       data,
-      true,
+      false,
       datesList[i]
     );
-    let examsDailyGoals: ExamGoal[] = generateNextDaySchedule(
+
+    let examsDailyGoals: ConfidenceUpdate[] = generateNextDaySchedule(
       data,
       datesList[i],
-      studyTrajectoryLines
+      studyTrajectoryLines,
+      true
     );
     res.set(datesList[i], examsDailyGoals);
     for (let j = 0; j < examsDailyGoals.length; j++) {
-      let exam = data.find((a) => a.id == examsDailyGoals[j].examId);
+      let exam = data.find((a) => a.id == examsDailyGoals[j].studyMaterial.id);
       if (exam) {
-        updateExamData(
-          exam,
-          exam.created_at,
-          datesList[i],
-          examsDailyGoals[j].allStudyMaterialGoals
-        );
+        await updateExamData(exam, datesList[i], examsDailyGoals[j]);
       }
     }
   }
@@ -122,7 +118,7 @@ function getDatesBetween(start: string, end: string): string[] {
  * @param allData
  * @param chosenDay
  */
-export function updateGlobalDates(allData: ExamData, chosenDay: string) {
+export function updateGlobalDates(allData: ExamData[], chosenDay: string) {
   //find start day
   let maxDaysBetweenStartCurrent = 0;
   let maxDaysBetweenCurrentEnd = 0;
@@ -133,8 +129,8 @@ export function updateGlobalDates(allData: ExamData, chosenDay: string) {
 
     if (created_at && exam_date) {
       let daysBetweenStartCurrent = daysBetween(created_at, chosenDay);
-      let daysBetweenCurrentEnd = daysBetween(exam_date, chosenDay);
-      if (daysBetweenStartCurrent > maxDaysBetweenStartCurrent) {
+      let daysBetweenCurrentEnd = daysBetween(chosenDay, exam_date);
+      if (daysBetweenStartCurrent >= maxDaysBetweenStartCurrent) {
         maxDaysBetweenStartCurrent = daysBetweenStartCurrent;
         studyingStartDate = created_at;
       }
@@ -161,72 +157,56 @@ function getNextDayExamGoal(
   parent: StudyMaterial,
   parentConfidenceIncreaseAmount: number,
   selectedDate: string
-): ExamGoal {
+): ConfidenceUpdate {
   let res = getStudyMaterialInfo(parent);
   let children = res.subStudyMaterial;
-  if (children) {
-    //ignore all study material that does not have a confidence/priority value
-    children = children.filter((a: StudyMaterial) => a.confidence != null);
-
+  if (children && children.length > 0) {
     const maxPriorityComparator = (a: StudyMaterial, b: StudyMaterial) =>
       b.priority! - a.priority!;
     const maxHeap = new Heap(maxPriorityComparator);
     maxHeap.init(children);
-    let parentDailyGoal: ExamGoal = {
-      examId: "",
-      examName: "",
-      currentConfidence: parent.confidence!,
-      totalConfidenceIncrease: 0,
-      allStudyMaterialGoals: new Map<string, StudyMaterialConfidenceUpdates>(),
-    };
+    let actualTotalParentConfidenceIncrease = 0;
     let len = children.length;
+    let childrenConfidenceUpdates = new Map<string, ConfidenceUpdate>();
     while (parentConfidenceIncreaseAmount > 0) {
       let child = maxHeap.pop();
       if (child) {
         //if the calculated confidence increase is higher than the amount of confidence increase left,
         //take the amount of confidence left
         let childConfidenceIncrease = Math.min(
-          calculateConfidenceIncrease(child.confidence!),
+          calculateConfidenceIncrease(child.confidence ?? 5),
           parentConfidenceIncreaseAmount * len
         );
-        let childDailyGoals: ExamGoal = getNextDayExamGoal(
+        let childConfidenceUpdates: ConfidenceUpdate = getNextDayExamGoal(
           child,
           childConfidenceIncrease,
           selectedDate
         );
-        let actualParentConfidenceIncrease =
-          childDailyGoals.totalConfidenceIncrease / len;
-
-        parentDailyGoal.totalConfidenceIncrease +=
-          actualParentConfidenceIncrease;
-        childDailyGoals.allStudyMaterialGoals.forEach(
-          (value: StudyMaterialConfidenceUpdates, key: string) => {
-            parentDailyGoal.allStudyMaterialGoals.set(key, value);
-          }
-        );
-        parentConfidenceIncreaseAmount -= actualParentConfidenceIncrease;
+        childrenConfidenceUpdates.set(child.id, childConfidenceUpdates);
+        actualTotalParentConfidenceIncrease +=
+          childConfidenceUpdates.confidenceIncrease;
+        parentConfidenceIncreaseAmount -=
+          childConfidenceUpdates.confidenceIncrease;
       } else {
         break;
       }
     }
+    let parentDailyGoal: ConfidenceUpdate = {
+      studyMaterial: parent,
+      confidenceIncrease: actualTotalParentConfidenceIncrease / len,
+      newDate:
+        actualTotalParentConfidenceIncrease / len == 0
+          ? selectedDate
+          : parent.last_studied,
+      childrenConfidenceUpdates: childrenConfidenceUpdates,
+    };
     return parentDailyGoal;
   } else {
     return {
-      examId: "",
-      examName: "",
-      currentConfidence: 0,
-      totalConfidenceIncrease: Math.ceil(parentConfidenceIncreaseAmount),
-      allStudyMaterialGoals: new Map<string, StudyMaterialConfidenceUpdates>([
-        [
-          parent.id,
-          {
-            studyMaterialName: parent.name,
-            currentConfidence: parent.confidence!,
-            confidenceIncrease: Math.ceil(parentConfidenceIncreaseAmount),
-            date: selectedDate,
-          },
-        ],
-      ]),
+      studyMaterial: parent,
+      confidenceIncrease: Math.ceil(parentConfidenceIncreaseAmount),
+      newDate: selectedDate,
+      childrenConfidenceUpdates: new Map(),
     };
   }
 }
@@ -239,28 +219,25 @@ function getNextDayExamGoal(
  * @returns
  */
 export function getExamConfidenceFunctions(
-  allData: ExamData,
+  allData: ExamData[],
   optimizeSchedule: boolean,
   currentDay: string
 ) {
   let functions: Line[] = [];
   for (let i = 0; i < allData.length; i++) {
-    let confidence = allData[i].confidence;
+    let confidence = allData[i].confidence ?? 5;
+    let confidenceGoal = allData[i].confidence_goal ?? 9;
 
-    if (confidence) {
-      let confidenceGoal = allData[i].confidence_goal ?? 9;
-
-      functions.push(
-        createFunction(
-          1.7, // * have the ability to change this modifier
-          daysBetween(studyingStartDate, currentDay),
-          confidence,
-          daysBetween(studyingStartDate, allData[i].exam_date),
-          confidenceGoal,
-          allData[i].id
-        )
-      );
-    }
+    functions.push(
+      createFunction(
+        1.7, // * have the ability to change this modifier
+        daysBetween(studyingStartDate, currentDay),
+        confidence,
+        daysBetween(studyingStartDate, allData[i].exam_date),
+        confidenceGoal,
+        allData[i].id
+      )
+    );
   }
   if (optimizeSchedule) {
     let combinations: Combination[] = getCombinations(functions);
@@ -372,6 +349,13 @@ export function createFunction(
 
   // Calculate the value of a
   let a = (startingConfidenceLevel - confidenceGoal) / (x0_exp - x1_exp);
+  // console.log(a)
+  // console.log("Starting CL: " + startingConfidenceLevel)
+  // console.log("Starting CG: " + confidenceGoal)
+  // console.log("Start Day: " + startDayNum)
+  // console.log("End Day: " +endDayNum)
+  // console.log("x0_exp: " + x0_exp)
+  // console.log("x1_exp " +x1_exp)
 
   // Calculate the value of k using the first equation
   let k = startingConfidenceLevel - a * x0_exp;
@@ -439,152 +423,69 @@ export function calculateCorrelation(
  */
 export async function updateExamData(
   parent: StudyMaterial,
-  examCreateDate: string,
   selectedDate: string,
-  confidenceUpdates: Map<string, StudyMaterialConfidenceUpdates>,
+  confidenceUpdates?: ConfidenceUpdate,
   updateDatabase?: {
     updateMainTables: updateMainTablesType;
-    updateEntryTables?: updateEntryTablesType;
+    insertEntryTables?: insertEntryTablesType;
   }
 ) {
-  let res = getStudyMaterialInfo(parent);
-  let children = res.subStudyMaterial;
   let originalParentConfidence = parent.confidence;
 
-  if (children) {
-    let updatedData = await getUpdatedParentStudyMaterialData(
-      children,
-      examCreateDate,
-      selectedDate,
-      confidenceUpdates,
-      updateDatabase
-    );
+  let childUpdates = confidenceUpdates?.childrenConfidenceUpdates;
+  let { subStudyMaterial } = getStudyMaterialInfo(parent);
 
-    if (originalParentConfidence != updatedData.updatedParentConfidence) {
-      parent.confidence = updatedData.updatedParentConfidence;
-      parent.last_studied = updatedData.updatedParentLastStudyDate;
-      parent.priority = updatedData.updatedParentLastStudyDate
+  if (confidenceUpdates && childUpdates && subStudyMaterial && subStudyMaterial.length > 0) {
+    subStudyMaterial.forEach(async (child, key) => {
+      if (confidenceUpdates.childrenConfidenceUpdates?.has(child.id)) {
+        await updateExamData(
+          child,
+          selectedDate,
+          confidenceUpdates.childrenConfidenceUpdates?.get(child.id),
+          updateDatabase
+        );
+      }
+    });
+    parent.confidence =
+      confidenceUpdates.confidenceIncrease + (parent.confidence ?? 0);
+    parent.last_studied = confidenceUpdates.newDate;
+    parent.priority = parent.confidence
+      ? (parent.confidence + 5) ** -1 * 70 -
+        1.2 ** daysBetween(parent.last_studied, selectedDate)
+      : null;
+    confidenceUpdates.studyMaterial = parent
+    if (updateDatabase) {
+      await updateDatabase.updateMainTables(parent);
+      if (updateDatabase.insertEntryTables) {
+        await updateDatabase.insertEntryTables(
+          parent,
+          parent.confidence - (originalParentConfidence ?? 0),
+          parent.last_studied
+        );
+      }
+    }
+  } else {
+    if (confidenceUpdates) {
+      parent.confidence =
+        confidenceUpdates.confidenceIncrease + (parent.confidence ?? 0);
+      parent.last_studied = confidenceUpdates.newDate;
+      parent.priority = parent.confidence
         ? (parent.confidence + 5) ** -1 * 70 +
-          1.2 **
-            daysBetween(updatedData.updatedParentLastStudyDate, selectedDate)
+          1.2 ** daysBetween(parent.last_studied, selectedDate)
         : null;
+      confidenceUpdates.studyMaterial = parent
       if (updateDatabase) {
-        updateDatabase.updateMainTables(parent);
-        if (
-          updateDatabase.updateEntryTables &&
-          updatedData.childEntriesIds.length != 0
-        ) {
-          let parentEntryId =
-            await updateDatabase.updateEntryTables.insertFunction(
-              parent,
-              updatedData.updatedParentConfidence -
-                (originalParentConfidence ?? 3)
-            );
-          updatedData.childEntriesIds.forEach((childEntryId: string) => {
-            updateDatabase.updateEntryTables!.updateFunction(
-              childEntryId,
-              parentEntryId,
-              parent
-            );
-          });
-        }
-      }
-    } else {
-      if (confidenceUpdates) {
-        let confidenceChange = confidenceUpdates.get(parent.id);
-        if (confidenceChange) {
-          parent.confidence =
-            confidenceChange.confidenceIncrease + (parent.confidence ?? 0);
-          parent.last_studied = confidenceChange.date;
-          parent.priority =
-            (confidenceChange.confidenceIncrease + parent.confidence + 5) **
-              -1 *
-              70 +
-            1.2 ** daysBetween(confidenceChange.date, selectedDate);
-          if (updateDatabase) {
-            updateDatabase.updateMainTables(parent);
-            if (updateDatabase.updateEntryTables) {
-              updateDatabase.updateEntryTables.insertFunction(
-                parent,
-                confidenceChange.confidenceIncrease
-              );
-            }
-          }
+        await updateDatabase.updateMainTables(parent);
+        if (updateDatabase.insertEntryTables) {
+          await updateDatabase.insertEntryTables(
+            parent,
+            confidenceUpdates.confidenceIncrease,
+            parent.last_studied
+          );
         }
       }
     }
   }
-}
-
-/**
- * Helper function to get updated parent data
- * @param childrenSubMaterial
- * @param examCreateDate
- * @param selectedDate
- * @param confidenceUpdates
- * @param updateDatabase
- * @returns an object containing updated parent study material data
- */
-async function getUpdatedParentStudyMaterialData(
-  childrenSubMaterial: StudyMaterial[],
-  examCreateDate: string,
-  selectedDate: string,
-  confidenceUpdates: Map<string, StudyMaterialConfidenceUpdates>,
-  updateDatabase?: {
-    updateMainTables: updateMainTablesType;
-    updateEntryTables?: updateEntryTablesType;
-  }
-) {
-  let numValidStudyMaterial = 0;
-  let sum: number | null = 0;
-  let studyMaterialLastStudied: string | null = null;
-  let minDaysLastStudied = Infinity;
-
-  let childEntriesIds = [];
-  for (let k = 0; k < childrenSubMaterial.length; k++) {
-    let originalSubMaterialConfidence = childrenSubMaterial[k].confidence;
-    updateExamData(
-      childrenSubMaterial[k],
-      examCreateDate,
-      selectedDate,
-      confidenceUpdates,
-      updateDatabase
-    );
-    let updatedSubMaterialConfidence = childrenSubMaterial[k].confidence;
-
-    numValidStudyMaterial++;
-    sum += updatedSubMaterialConfidence ?? 3;
-    if (
-      updateDatabase &&
-      updateDatabase.updateEntryTables &&
-      updatedSubMaterialConfidence != originalSubMaterialConfidence
-    ) {
-      childEntriesIds.push(
-        await updateDatabase.updateEntryTables.insertFunction(
-          childrenSubMaterial[k],
-          (updatedSubMaterialConfidence ?? 0) -
-            (originalSubMaterialConfidence ?? 3)
-        )
-      );
-    }
-    let subMaterialLastStudied = childrenSubMaterial[k].last_studied;
-    if (subMaterialLastStudied) {
-      let numDaysLastStudied = daysBetween(
-        subMaterialLastStudied,
-        selectedDate
-      );
-
-      if (numDaysLastStudied < minDaysLastStudied) {
-        minDaysLastStudied = numDaysLastStudied;
-        studyMaterialLastStudied = subMaterialLastStudied;
-      }
-    }
-  }
-  return {
-    updatedParentConfidence: sum / numValidStudyMaterial,
-    updatedParentLastStudyDate: studyMaterialLastStudied,
-    childEntriesIds,
-  };
 }
 
 /**
@@ -598,9 +499,9 @@ export function getStudyMaterialInfo(data: StudyMaterial): {
 } {
   let subtopics: StudyMaterial[] | undefined = data.subtopics;
   let topics: StudyMaterial[] | undefined = data.topics;
-  if (subtopics && subtopics.length > 0) {
+  if (subtopics) {
     return { subStudyMaterial: subtopics, studyMaterialType: "topics" };
-  } else if (topics && topics.length > 0) {
+  } else if (topics) {
     return { subStudyMaterial: topics, studyMaterialType: "exams" };
   } else {
     return { subStudyMaterial: null, studyMaterialType: "subtopics" };
@@ -615,14 +516,11 @@ export function getStudyMaterialInfo(data: StudyMaterial): {
  */
 export function daysBetween(date1: string, date2: string): number {
   if (date1) {
-    // Parse the date string into a Date object
     const d1 = new Date(date1);
-
-    // Get the current date
     const d2 = new Date(date2);
 
     // Calculate the difference in time (milliseconds)
-    const diffInTime = Math.abs(d2.getTime() - d1.getTime());
+    const diffInTime = d2.getTime() - d1.getTime();
 
     // Convert the time difference from milliseconds to days
     const diffInDays = Math.ceil(diffInTime / (1000 * 60 * 60 * 24));
@@ -636,7 +534,7 @@ export function daysBetween(date1: string, date2: string): number {
  * Utility function to print an ExamData object
  * @param exams
  */
-export function printExams(exams: ExamData) {
+export function printExams(exams: ExamData[]) {
   for (let i = 0; i < exams.length; i++) {
     console.log("Exam Name: " + exams[i].name);
     console.log("Exam Confidence: " + exams[i].confidence);
