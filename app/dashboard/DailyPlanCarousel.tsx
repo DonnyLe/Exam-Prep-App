@@ -39,8 +39,8 @@ export default function DailyPlanCarousel({
                 ))}
 
                 <div>
-                  <div>{value[currentPage]?.studyMaterial.name}</div>
-                  <div>{value[currentPage]?.confidenceIncrease}</div>
+                  <div>Topic: {value[currentPage]?.studyMaterial.name}</div>
+                  <div>Exam Total Increase: + {Math.round(value[currentPage]?.confidenceIncrease* 100)/100}</div>
 
                   {value[currentPage]?.childrenConfidenceUpdates ? (
                     <div>
@@ -48,8 +48,8 @@ export default function DailyPlanCarousel({
                         value[currentPage]?.childrenConfidenceUpdates?.entries() ?? []
                       ).map(([childKey, childValue]) => (
                         <div key={childKey}>
-                          <div>{childValue.studyMaterial.name}</div>
-                          <div className="indent-4">+ {childValue.confidenceIncrease}</div>
+                          <div className="indent-4">Topic: {childValue.studyMaterial.name}</div>
+                          <div className="indent-4">Topic Increase: + {Math.round(childValue.confidenceIncrease  * 100)/100}</div>
 
                           {childValue.childrenConfidenceUpdates ? (
                             <div>
@@ -57,9 +57,9 @@ export default function DailyPlanCarousel({
                                 childValue.childrenConfidenceUpdates.entries() ?? []
                               ).map(([grandchildKey, grandchildValue]) => (
                                 <div key={grandchildKey}>
-                                  <div>{grandchildValue.studyMaterial.name}</div>
-                                  <div className="indent-4">
-                                    + {grandchildValue.confidenceIncrease}
+                                  <div className="indent-8">Subtopic: {grandchildValue.studyMaterial.name}</div>
+                                  <div className="indent-8">Subtopic Increase: 
+                                    + {Math.round(grandchildValue.confidenceIncrease * 100)/100}
                                   </div>
                                 </div>
                               ))}
