@@ -15,6 +15,7 @@ import {
 } from "@/app/schedule/algorithm/generateSchedule";
 import { useQuery } from "@tanstack/react-query";
 import { ExamData, examQuery, FullSchedule } from "@/lib/algorithm-types";
+import Link from "next/link";
 export default async function Dashboard({
   params,
 }: {
@@ -44,7 +45,11 @@ export default async function Dashboard({
           <DailyPlanCarousel full_schedule={schedule} />
           <div className="flex flex-col h-full justify-center">
             <CreateExamButton user_id={params.user_id} />
-            <Button>Add Study Session </Button>
+            <Button asChild>
+              <Link href={`/confidence-form/${params.user_id}`}>
+                Update Your Confidence Levels{" "}
+              </Link>
+            </Button>
           </div>
         </div>
       </div>
