@@ -29,6 +29,7 @@ export function generateNextDaySchedule(
   studyMaterial: ExamData[],
   selectedDate: string,
   studyTrajectoryLines: Line[],
+  usePredictedData?: boolean
 ) {
   let allExamsDailyGoals: ConfidenceUpdate[] = [];
 
@@ -85,6 +86,7 @@ export async function generateFullSchedule(
       data,
       datesList[i],
       studyTrajectoryLines,
+      true
     );
     res.set(datesList[i], examsDailyGoals);
     for (let j = 0; j < examsDailyGoals.length; j++) {

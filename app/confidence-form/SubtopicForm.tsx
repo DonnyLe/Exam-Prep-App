@@ -2,7 +2,7 @@
 import { Dispatch, SetStateAction, useContext, useState } from "react";
 import { Slider } from "@/components/ui/slider";
 import { Label } from "@/components/ui/label";
-import { ConfidenceData, StudyType } from "@/lib/form-types";
+import { ConfidenceData, StudyType } from "./[user_id]/page";
 import { SubtopicData } from "../dashboard/[user_id]/page";
 import { ConfidenceUpdates } from "@/lib/algorithm-types";
 
@@ -13,6 +13,7 @@ export default function SubtopicsConfienceForm({
   subtopic: SubtopicData;
   appendChangesToParent: (child: ConfidenceUpdates) => void;
 }) {
+
   return (
     <>
       <Label>{subtopic.name}</Label>

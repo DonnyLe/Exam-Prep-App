@@ -1,4 +1,3 @@
-import { createClient } from "@/utils/supabase/client";
 import { z } from "zod";
 
 export const subtopicSchema = z.object({
@@ -32,16 +31,3 @@ export interface Subjects {
   id?: number;
   subject_name: string;
 }
-export enum StudyType {
-  Topic,
-  Subtopic,
-}
-
-export type ConfidenceData = {
-  type: StudyType;
-  confidence_level: number;
-};
-const supabase = createClient();
-export const supabaseQuery = supabase
-  .from("exams")
-  .select("*, subjects(*), topics(*, subtopics(*))");
