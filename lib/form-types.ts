@@ -31,3 +31,7 @@ export interface Subjects {
   id?: number;
   subject_name: string;
 }
+export enum StudyType {
+  Topic,
+  Subtopic,
+}

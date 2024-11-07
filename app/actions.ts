@@ -14,7 +14,7 @@ import { ConfidenceUpdates } from "@/lib/algorithm-types";
 
 import { v4 as uuidv4 } from "uuid";
 import { ExamFormData } from "@/lib/form-types";
-import { ExamData } from "./dashboard/[user_id]/page";
+import { ExamData } from "@/lib/algorithm-types";
 
 export async function addExam(data: ExamFormData, user_id: string) {
   const supabase = createClient();
@@ -73,7 +73,7 @@ export async function updateConfidenceScores(
   let updateSupabase = async (studyMaterial: StudyMaterial) => {
     let res = getStudyMaterialInfo(studyMaterial);
     if (res) {
-      console.log(res.subStudyMaterial)
+      console.log(res.subStudyMaterial);
       const { data: topics, error } = await supabase
         .from(res.studyMaterialType)
         .update({
@@ -94,7 +94,6 @@ export async function updateConfidenceScores(
     let res = getStudyMaterialInfo(studyMaterial);
     switch (res.studyMaterialType) {
       case "exams":
-
         let res2 = await supabase
           .from("studied_exam_entry")
           .insert({
@@ -140,5 +139,5 @@ export async function updateConfidenceScores(
       });
     }
   }
-  redirect(`/dashboard/${user_id}`)
+  redirect(`/dashboard/${user_id}`);
 }

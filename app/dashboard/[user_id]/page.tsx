@@ -5,9 +5,8 @@ import { redirect } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { cache } from "react";
 import { SupabaseClient } from "@supabase/supabase-js";
-import { QueryResult, QueryData, QueryError } from "@supabase/supabase-js";
+import { QueryResult, QueryError } from "@supabase/supabase-js";
 import { Database } from "@/lib/supabase-types";
-import { createClient } from "@/utils/supabase/client";
 import DailyPlanCarousel from "../DailyPlanCarousel";
 import { CreateExamButton } from "@/components/CreateExamButton";
 import {
@@ -15,22 +14,7 @@ import {
   updateExamData,
 } from "@/app/schedule/algorithm/generateSchedule";
 import { useQuery } from "@tanstack/react-query";
-import { FullSchedule } from "@/lib/algorithm-types";
-// import { calculateSchedule } from "@/utils/generateSchedule";
-
-const supabase = createClient();
-export const examQuery = supabase
-  .from("exams")
-  .select("*, topics(*, subtopics(*))");
-
-export const subjectQuery = supabase.from("subtopics").select("*");
-export type ExamData = QueryData<typeof examQuery>[number];
-
-export type SubjectData = QueryData<typeof subjectQuery>;
-
-export type TopicData = ExamData["topics"][number];
-export type SubtopicData = TopicData["subtopics"][number];
-
+import { ExamData, examQuery, FullSchedule } from "@/lib/algorithm-types";
 export default async function Dashboard({
   params,
 }: {
@@ -45,7 +29,7 @@ export default async function Dashboard({
     allData,
     new Date().toISOString().split("T")[0]
   );
-  console.log(schedule)
+  console.log(schedule);
   return (
     <div className="w-full">
       <nav className="w-full flex justify-center border-b border-b-foreground/10 h-16">

@@ -1,3 +1,6 @@
+import { createClient } from "@/utils/supabase/client";
+import { QueryData } from "@supabase/supabase-js";
+
 export type FullSchedule = Map<string, ConfidenceUpdates[]>;
 
 export type ConfidenceUpdates = {
@@ -44,4 +47,16 @@ export type insertEntryTablesType = (
 
 export type updateMainTablesType = (
   studyMaterial: StudyMaterial
-) => Promise<void>;
+) => Promise<void>; // import { calculateSchedule } from "@/utils/generateSchedule";
+const supabase = createClient();
+export const examQuery = supabase
+  .from("exams")
+  .select("*, topics(*, subtopics(*))");
+
+export const subjectQuery = supabase.from("subtopics").select("*");
+export type ExamData = QueryData<typeof examQuery>[number];
+
+export type SubjectData = QueryData<typeof subjectQuery>;
+
+export type TopicData = ExamData["topics"][number];
+export type SubtopicData = TopicData["subtopics"][number];

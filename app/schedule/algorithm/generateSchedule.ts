@@ -1,6 +1,6 @@
 export const revalidate = 0;
 
-import { ExamData } from "@/app/dashboard/[user_id]/page";
+import { ExamData } from "@/lib/algorithm-types";
 import { Heap } from "heap-js";
 import { correlation } from "@mathigon/fermat";
 import {
@@ -435,7 +435,12 @@ export async function updateExamData(
   let childUpdates = confidenceUpdates?.childrenConfidenceUpdates;
   let { subStudyMaterial } = getStudyMaterialInfo(parent);
 
-  if (confidenceUpdates && childUpdates && subStudyMaterial && subStudyMaterial.length > 0) {
+  if (
+    confidenceUpdates &&
+    childUpdates &&
+    subStudyMaterial &&
+    subStudyMaterial.length > 0
+  ) {
     subStudyMaterial.forEach(async (child, key) => {
       if (confidenceUpdates.childrenConfidenceUpdates?.has(child.id)) {
         await updateExamData(
@@ -453,7 +458,7 @@ export async function updateExamData(
       ? (parent.confidence + 5) ** -1 * 70 -
         1.2 ** daysBetween(parent.last_studied, selectedDate)
       : null;
-    confidenceUpdates.studyMaterial = parent
+    confidenceUpdates.studyMaterial = parent;
     if (updateDatabase) {
       await updateDatabase.updateMainTables(parent);
       if (updateDatabase.insertEntryTables) {
@@ -473,7 +478,7 @@ export async function updateExamData(
         ? (parent.confidence + 5) ** -1 * 70 +
           1.2 ** daysBetween(parent.last_studied, selectedDate)
         : null;
-      confidenceUpdates.studyMaterial = parent
+      confidenceUpdates.studyMaterial = parent;
       if (updateDatabase) {
         await updateDatabase.updateMainTables(parent);
         if (updateDatabase.insertEntryTables) {

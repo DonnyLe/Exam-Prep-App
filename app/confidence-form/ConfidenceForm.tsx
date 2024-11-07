@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { ExamData } from "../dashboard/[user_id]/page";
+import { ExamData } from "@/lib/algorithm-types";
 import { ConfidenceUpdates } from "@/lib/algorithm-types";
 import { Button } from "@/components/ui/button";
 import { updateConfidenceScores } from "../actions";
@@ -24,7 +24,7 @@ export default function ConfidenceForm({
   };
 
   console.log(allExamConfidenceUpdates);
-  
+
   return (
     <div>
       {allExams.map((exam, key) => {

@@ -2,8 +2,9 @@
 import { Dispatch, SetStateAction, useContext, useState } from "react";
 import { Slider } from "@/components/ui/slider";
 import { Label } from "@/components/ui/label";
-import { ConfidenceData, StudyType } from "./[user_id]/page";
-import { SubtopicData } from "../dashboard/[user_id]/page";
+import { ConfidenceData } from "./[user_id]/page";
+import { StudyType } from "@/lib/form-types";
+import { SubtopicData } from "@/lib/algorithm-types";
 import { ConfidenceUpdates } from "@/lib/algorithm-types";
 
 export default function SubtopicsConfienceForm({
@@ -13,7 +14,6 @@ export default function SubtopicsConfienceForm({
   subtopic: SubtopicData;
   appendChangesToParent: (child: ConfidenceUpdates) => void;
 }) {
-
   return (
     <>
       <Label>{subtopic.name}</Label>

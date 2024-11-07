@@ -1,4 +1,4 @@
-import { ExamData } from "@/app/dashboard/[user_id]/page";
+import { ExamData } from "@/lib/algorithm-types";
 import { randomUUID } from "crypto";
 
 // Manually creating the data
