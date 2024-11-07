@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { ExamData } from "@/lib/algorithm-types";
+import { ExamData, SubjectData } from "@/lib/algorithm-types";
 import { ConfidenceUpdates } from "@/lib/algorithm-types";
 import { Button } from "@/components/ui/button";
 import { updateConfidenceScores } from "../actions";

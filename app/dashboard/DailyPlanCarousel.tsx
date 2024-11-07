@@ -25,7 +25,7 @@ export default function DailyPlanCarousel({
         {Array.from(full_schedule).map(([key, value]) => (
           <CarouselItem key={key}>
             <div>Date: {key}</div>
-            {value != null ? (
+            {value != null && value.length > 0? (
               <div>
                 {value.map((exam, index) => (
                   <Button
@@ -34,12 +34,12 @@ export default function DailyPlanCarousel({
                       updateCurrentPage(index);
                     }}
                   >
-                    Exam {index + 1}
+                    {exam.studyMaterial.subjects?.subject_name}: {exam.studyMaterial.name}
                   </Button>
                 ))}
 
                 <div>
-                  <div>Topic: {value[currentPage]?.studyMaterial.name}</div>
+                  <div>Exam: {value[currentPage]?.studyMaterial.name}</div>
                   <div>Exam Total Increase: + {Math.round(value[currentPage]?.confidenceIncrease* 100)/100}</div>
 
                   {value[currentPage]?.childrenConfidenceUpdates ? (

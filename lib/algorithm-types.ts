@@ -13,6 +13,8 @@ export type ConfidenceUpdates = {
 export type StudyMaterial = {
   name: string;
   id: string;
+  subject_id?: string;
+  subjects?: { id: string; subject_name: string; user_id: string } | null;
   confidence: number | null;
   confidence_goal?: number | null;
   priority: number | null;
@@ -51,9 +53,9 @@ export type updateMainTablesType = (
 const supabase = createClient();
 export const examQuery = supabase
   .from("exams")
-  .select("*, topics(*, subtopics(*))");
+  .select("*, subjects(*), topics(*, subtopics(*))");
 
-export const subjectQuery = supabase.from("subtopics").select("*");
+export const subjectQuery = supabase.from("subjects").select("*");
 export type ExamData = QueryData<typeof examQuery>[number];
 
 export type SubjectData = QueryData<typeof subjectQuery>;

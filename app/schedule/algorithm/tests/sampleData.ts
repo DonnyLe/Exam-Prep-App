@@ -46,6 +46,11 @@ export const sampleExamData: ExamData[] = [
     priority: null,
     id: examIdMath,
     subject_id: mathID,
+    subjects: {
+      subject_name: "Math",
+      id: mathID,
+      user_id: userID
+    },
     user_id: userID,
     topics: [
       {
@@ -344,6 +349,11 @@ export const sampleExamData: ExamData[] = [
     priority: null,
     subject_id: englishID,
     user_id: userID,
+    subjects: {
+      subject_name: "English",
+      id: englishID,
+      user_id: userID
+    },
 
     topics: [
       {
@@ -516,6 +526,11 @@ export const sampleExamData: ExamData[] = [
     id: examIdPhysics,
     subject_id: physicsID,
     user_id: userID,
+    subjects: {
+      subject_name: "Physics",
+      id: physicsID,
+      user_id: userID
+    },
 
     topics: [
       {

@@ -14,7 +14,7 @@ import {
   updateExamData,
 } from "@/app/schedule/algorithm/generateSchedule";
 import { useQuery } from "@tanstack/react-query";
-import { ExamData, examQuery, FullSchedule } from "@/lib/algorithm-types";
+import { ExamData, examQuery, FullSchedule, SubjectData } from "@/lib/algorithm-types";
 import Link from "next/link";
 export default async function Dashboard({
   params,
@@ -25,6 +25,8 @@ export default async function Dashboard({
   if (error) throw error;
 
   let allData: ExamData[] = await examdata;
+  console.log(allData)
+
 
   let schedule: FullSchedule = await generateFullSchedule(
     allData,
