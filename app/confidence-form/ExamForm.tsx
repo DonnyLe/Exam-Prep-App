@@ -1,7 +1,7 @@
 "use client";
 import { Button } from "@/components/ui/button";
 import { ExamData } from "../dashboard/[user_id]/page";
-import { ConfidenceData } from "./[user_id]/page";
+import { ConfidenceData } from "@/lib/form-types";
 import TopicConfidenceForm from "./TopicForm";
 import { updateConfidenceScores } from "../actions";
 import {
@@ -75,9 +75,7 @@ export default function ExamConfidenceForm({
   return (
     <div className="space-y-5">
       <h1>{exam.name}</h1>
-      <h1>{`Current Confidence: ${
-        exam.confidence ?? 0
-      }`}</h1>
+      <h1>{`Current Confidence: ${exam.confidence ?? 0}`}</h1>
       <h1>{`New Confidence: ${
         (exam.confidence ?? 0) + examConfidenceUpdates.confidenceIncrease
       }`}</h1>

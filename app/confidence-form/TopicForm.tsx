@@ -10,7 +10,7 @@ import {
 
 // import { Subtopics } from "@/utils/classes/Subtopics";
 import { Label } from "@/components/ui/label";
-import { ConfidenceData, StudyType } from "./[user_id]/page";
+import { ConfidenceData, StudyType } from "@/lib/form-types";
 import { Slider } from "@/components/ui/slider";
 import { ConfidenceUpdates } from "@/lib/algorithm-types";
 import { SubtopicData, TopicData } from "../dashboard/[user_id]/page";
@@ -33,7 +33,7 @@ export default function TopicConfidenceForm({
         newDate: topic.last_studied,
         childrenConfidenceUpdates: new Map(),
       });
-      console.log(topicConfidenceUpdates.confidenceIncrease)
+    console.log(topicConfidenceUpdates.confidenceIncrease);
     useEffect(() => {
       appendChangesToExam(topicConfidenceUpdates);
     }, [topicConfidenceUpdates]);
