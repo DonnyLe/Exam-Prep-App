@@ -14,10 +14,13 @@ export default function SubtopicsConfienceForm({
   subtopic: SubtopicData;
   appendChangesToParent: (child: ConfidenceUpdates) => void;
 }) {
+  const [confidence, setConfidence] = useState<number>(
+    subtopic.confidence ?? 3
+  );
   return (
     <>
       <Label>{subtopic.name}</Label>
-      <h1>{subtopic.confidence}</h1>
+      <h1>{confidence}</h1>
       <Slider
         onValueCommit={(value: number[]) => {
           let subtopicConfidenceUpdate: ConfidenceUpdates = {
@@ -26,6 +29,7 @@ export default function SubtopicsConfienceForm({
             newDate: new Date().toISOString().split("T")[0],
             childrenConfidenceUpdates: null,
           };
+          setConfidence(value[0]);
           appendChangesToParent(subtopicConfidenceUpdate);
         }}
         defaultValue={[subtopic.confidence ?? 0]}

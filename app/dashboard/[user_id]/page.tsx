@@ -14,7 +14,12 @@ import {
   updateExamData,
 } from "@/app/schedule/algorithm/generateSchedule";
 import { useQuery } from "@tanstack/react-query";
-import { ExamData, examQuery, FullSchedule, SubjectData } from "@/lib/algorithm-types";
+import {
+  ExamData,
+  examQuery,
+  FullSchedule,
+  SubjectData,
+} from "@/lib/algorithm-types";
 import Link from "next/link";
 export default async function Dashboard({
   params,
@@ -25,8 +30,7 @@ export default async function Dashboard({
   if (error) throw error;
 
   let allData: ExamData[] = await examdata;
-  console.log(allData)
-
+  console.log(allData);
 
   let schedule: FullSchedule = await generateFullSchedule(
     allData,
@@ -40,8 +44,7 @@ export default async function Dashboard({
           <AuthButton />
         </div>
       </nav>
-      <div className="flex flex-col">
-        <h1 className="text-6xl bg-primary-foreground"></h1>
+      <div className="flex flex-col bg-slate-50 w-full">
         <h1>Welcome Back Donny!</h1>
         <div className="grid grid-cols-2 justify-items-center h-screen">
           <DailyPlanCarousel full_schedule={schedule} />

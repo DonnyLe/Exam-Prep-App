@@ -1,5 +1,7 @@
 import { GeistSans } from "geist/font/sans";
 import "./globals.css";
+import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
+import { AppSidebar } from "@/components/AppSidebar";
 
 const defaultUrl = process.env.VERCEL_URL
   ? `https://${process.env.VERCEL_URL}`
@@ -16,12 +18,24 @@ export default function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
+  // <SidebarProvider>
+  //     <AppSidebar />
+  //     <main>
+  //       <SidebarTrigger />
+  //       {children}
+  //     </main>
+  //   </SidebarProvider>
   return (
     <html lang="en" className={GeistSans.className}>
-      <body className="dark">
-        <main>
-          {children}
-        </main>
+      <body className="w-screen">
+        <SidebarProvider>
+          <AppSidebar />
+
+          <main className="flex flex-grow">
+            <SidebarTrigger />
+            {children}
+          </main>
+        </SidebarProvider>
       </body>
     </html>
   );

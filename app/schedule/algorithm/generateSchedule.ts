@@ -72,7 +72,7 @@ export async function generateFullSchedule(
 ) {
   const data = structuredClone(allData);
   let res: FullSchedule = new Map<string, ConfidenceUpdate[]>();
-
+  
   updateGlobalDates(data, startDate);
   let datesList: string[] = getDatesBetween(startDate, studyingEndDate);
   for (let i = 0; i < datesList.length - 1; i++) {
@@ -174,7 +174,7 @@ function getNextDayExamGoal(
         //if the calculated confidence increase is higher than the amount of confidence increase left,
         //take the amount of confidence left
         let childConfidenceIncrease = Math.min(
-          calculateConfidenceIncrease(child.confidence ?? 5),
+          calculateConfidenceIncrease(child.confidence ?? 3),
           parentConfidenceIncreaseAmount * len
         );
         let childConfidenceUpdates: ConfidenceUpdate = getNextDayExamGoal(
@@ -225,7 +225,7 @@ export function getExamConfidenceFunctions(
 ) {
   let functions: Line[] = [];
   for (let i = 0; i < allData.length; i++) {
-    let confidence = allData[i].confidence ?? 5;
+    let confidence = allData[i].confidence ?? 3;
     let confidenceGoal = allData[i].confidence_goal ?? 9;
 
     functions.push(
@@ -452,27 +452,27 @@ export async function updateExamData(
       }
     });
     parent.confidence =
-      confidenceUpdates.confidenceIncrease + (parent.confidence ?? 0);
+      confidenceUpdates.confidenceIncrease + (parent.confidence ?? 3);
     parent.last_studied = confidenceUpdates.newDate;
     parent.priority = parent.confidence
       ? (parent.confidence + 5) ** -1 * 70 -
         1.2 ** daysBetween(parent.last_studied, selectedDate)
       : null;
     confidenceUpdates.studyMaterial = parent;
-    if (updateDatabase) {
-      await updateDatabase.updateMainTables(parent);
-      if (updateDatabase.insertEntryTables) {
-        await updateDatabase.insertEntryTables(
-          parent,
-          parent.confidence - (originalParentConfidence ?? 0),
-          parent.last_studied
-        );
-      }
-    }
+    // if (updateDatabase) {
+    //   await updateDatabase.updateMainTables(parent);
+    //   if (updateDatabase.insertEntryTables) {
+    //     await updateDatabase.insertEntryTables(
+    //       parent,
+    //       parent.confidence - (originalParentConfidence ?? 3),
+    //       parent.last_studied
+    //     );
+    //   }
+    // }
   } else {
     if (confidenceUpdates) {
       parent.confidence =
-        confidenceUpdates.confidenceIncrease + (parent.confidence ?? 0);
+        confidenceUpdates.confidenceIncrease + (parent.confidence ?? 3);
       parent.last_studied = confidenceUpdates.newDate;
       parent.priority = parent.confidence
         ? (parent.confidence + 5) ** -1 * 70 +
