@@ -20,7 +20,8 @@ export default function DailyPlanCarousel({
   console.log(full_schedule);
 
   return (
-    <Carousel className="w-1/2 h-1/2">
+    <div className="flex w-1/2 h-full justify-center items-center bg-white rounded-3xl"> 
+    <Carousel className="w-4/6 h-full">
       <CarouselContent>
         {Array.from(full_schedule).map(([key, value]) => (
           <CarouselItem key={key}>
@@ -78,5 +79,6 @@ export default function DailyPlanCarousel({
       <CarouselPrevious />
       <CarouselNext />
     </Carousel>
+    </div>
   );
 }

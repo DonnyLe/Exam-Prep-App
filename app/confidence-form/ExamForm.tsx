@@ -1,7 +1,6 @@
 "use client";
 import { Button } from "@/components/ui/button";
 import { ExamData } from "@/lib/algorithm-types";
-import { ConfidenceData } from "./[user_id]/page";
 import TopicConfidenceForm from "./TopicForm";
 import { updateConfidenceScores } from "../actions";
 import {

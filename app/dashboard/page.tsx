@@ -7,12 +7,14 @@ import { cache } from "react";
 import { SupabaseClient } from "@supabase/supabase-js";
 import { QueryResult, QueryError } from "@supabase/supabase-js";
 import { Database } from "@/lib/supabase-types";
-import DailyPlanCarousel from "../DailyPlanCarousel";
+import DailyPlanCarousel from "./DailyPlanCarousel";
 import { CreateExamButton } from "@/components/CreateExamButton";
 import {
   generateFullSchedule,
   updateExamData,
 } from "@/app/schedule/algorithm/generateSchedule";
+import { createClient } from "@/utils/supabase/server";
+
 import { useQuery } from "@tanstack/react-query";
 import {
   ExamData,
@@ -26,6 +28,13 @@ export default async function Dashboard({
 }: {
   params: { user_id: string };
 }) {
+  const supabase = createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) {
+    return redirect("/login/");
+  }
   const { data: examdata, error } = await examQuery;
   if (error) throw error;
 
@@ -38,21 +47,16 @@ export default async function Dashboard({
   );
   console.log(schedule);
   return (
-    <div className="w-full">
-      <nav className="w-full flex justify-center border-b border-b-foreground/10 h-16">
-        <div className="w-full max-w-4xl flex justify-between items-center p-3 text-sm bg-sec">
-          <AuthButton />
-        </div>
-      </nav>
-      <div className="flex flex-col bg-slate-50 w-full">
+    <div className="w-full h-full">
+      <div className="flex flex-col  w-full">
         <h1>Welcome Back Donny!</h1>
-        <div className="grid grid-cols-2 justify-items-center h-screen">
+        <div className="h-72 grid grid-cols-2 justify-items-center">
           <DailyPlanCarousel full_schedule={schedule} />
-          <div className="flex flex-col h-full justify-center">
-            <CreateExamButton user_id={params.user_id} />
+          <div className="flex flex-col justify-center">
+            <CreateExamButton />
             <Button asChild>
-              <Link href={`/confidence-form/${params.user_id}`}>
-                Update Your Confidence Levels{" "}
+              <Link href={`/confidence-form/`}>
+                Update Your Confidence Levels
               </Link>
             </Button>
           </div>

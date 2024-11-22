@@ -10,7 +10,6 @@ import {
 
 // import { Subtopics } from "@/utils/classes/Subtopics";
 import { Label } from "@/components/ui/label";
-import { ConfidenceData } from "./[user_id]/page";
 import { StudyType } from "@/lib/form-types";
 import { Slider } from "@/components/ui/slider";
 import { ConfidenceUpdates } from "@/lib/algorithm-types";

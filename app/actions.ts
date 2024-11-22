@@ -60,7 +60,7 @@ export async function addExam(data: ExamFormData, user_id: string) {
     }
   }
   revalidatePath("/dashboard/[user_id]", "page");
-  redirect(`/dashboard/${user_id}`);
+  redirect(`/dashboard`);
 }
 
 export async function updateConfidenceScores(

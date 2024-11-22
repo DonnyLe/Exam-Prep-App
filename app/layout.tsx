@@ -2,6 +2,7 @@ import { GeistSans } from "geist/font/sans";
 import "./globals.css";
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/AppSidebar";
+import AuthButton from "@/components/AuthButton";
 
 const defaultUrl = process.env.VERCEL_URL
   ? `https://${process.env.VERCEL_URL}`
@@ -9,8 +10,8 @@ const defaultUrl = process.env.VERCEL_URL
 
 export const metadata = {
   metadataBase: new URL(defaultUrl),
-  title: "Next.js and Supabase Starter Kit",
-  description: "The fastest way to build apps with Next.js and Supabase",
+  title: "Exam Prep",
+  description: "Never cram for your exams again",
 };
 
 export default function RootLayout({
@@ -18,22 +19,20 @@ export default function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
-  // <SidebarProvider>
-  //     <AppSidebar />
-  //     <main>
-  //       <SidebarTrigger />
-  //       {children}
-  //     </main>
-  //   </SidebarProvider>
   return (
     <html lang="en" className={GeistSans.className}>
-      <body className="w-screen">
-        <SidebarProvider>
+      <body>
+        <SidebarProvider className="h-screen w-screen">
           <AppSidebar />
 
-          <main className="flex flex-grow">
-            <SidebarTrigger />
-            {children}
+          <main className="h-full w-full">
+            <div className="flex flex-grow flex-col rounded-full">
+              <nav className="w-full flex h-24 justify-between items-center">
+                <SidebarTrigger />
+                <AuthButton />
+              </nav>
+              {children}
+            </div>
           </main>
         </SidebarProvider>
       </body>

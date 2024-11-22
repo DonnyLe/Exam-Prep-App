@@ -2,7 +2,6 @@
 import { Dispatch, SetStateAction, useContext, useState } from "react";
 import { Slider } from "@/components/ui/slider";
 import { Label } from "@/components/ui/label";
-import { ConfidenceData } from "./[user_id]/page";
 import { StudyType } from "@/lib/form-types";
 import { SubtopicData } from "@/lib/algorithm-types";
 import { ConfidenceUpdates } from "@/lib/algorithm-types";

@@ -29,7 +29,7 @@ export default function Login({
     } = await supabase.auth.getUser();
 
     if(user) {
-      return redirect("/dashboard/" + user.id);
+      return redirect("/dashboard/");
     }
   };
 

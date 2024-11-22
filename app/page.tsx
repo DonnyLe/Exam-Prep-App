@@ -25,7 +25,7 @@ export default async function Index() {
   } = await supabase.auth.getUser();
   console.log(user);
   if (user) {
-    return redirect("/dashboard/" + user.id);
+    return redirect("/dashboard/");
   }
 
   
