@@ -3,7 +3,7 @@ import { createClient } from "@/utils/supabase/server";
 import type { ExamData } from "@/lib/algorithm-types";
 import { cookies } from "next/headers";
 export async function loadStudyData() {
-  const supabase = createClient();
+  const supabase = await createClient();
   const {
     data: { user },
   } = await supabase.auth.getUser();
@@ -40,11 +40,11 @@ export async function loadStudyData() {
         : null,
   };
 }
-export function studyToday() {
+export async function studyToday() {
   let timezone = "America/New_York";
   try {
     timezone = decodeURIComponent(
-      cookies().get("study_timezone")?.value ?? timezone,
+      (await cookies()).get("study_timezone")?.value ?? timezone,
     );
     return new Intl.DateTimeFormat("en-CA", {
       timeZone: timezone,

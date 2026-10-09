@@ -7,9 +7,9 @@ export const dynamic = "force-dynamic";
 export default async function Demo({
   searchParams,
 }: {
-  searchParams: { view?: string };
+  searchParams: Promise<{ view?: string }>;
 }) {
-  const today = studyToday();
+  const today = await studyToday();
   const exams = demoExams(today);
   const schedule = scheduleItems(
     await generateFullSchedule(exams, today),
@@ -23,7 +23,7 @@ export default async function Demo({
       sessions={[]}
       schedule={schedule}
       today={today}
-      view={searchParams.view ?? "today"}
+      view={(await searchParams).view ?? "today"}
       demo
     />
   );

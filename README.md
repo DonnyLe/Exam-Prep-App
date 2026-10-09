@@ -36,7 +36,7 @@ The timer is optional, uses an absolute deadline, and does not change topic sele
 
 ## Checks
 
-- `npm test -- --runInBand`: scheduler and interleaving assertions.
+- `npm test -- --runInBand`: scheduler, interleaving, and refreshed auth cookie/cache-header assertions.
 - `npm run test:database`: local PostgreSQL migration/transaction checks using PGlite and the original table shape from the checked-in types. This does not verify the unavailable live project.
 - `npx tsc --noEmit --incremental false`: type check.
 - `npm run build`: production build.
@@ -44,3 +44,11 @@ The timer is optional, uses an absolute deadline, and does not change topic sele
 ## Future improvements
 
 Collect real sessions before tuning the gain equation or trajectory exponent. Compare recommended work with actual confidence changes and elapsed time. Explicit recall feedback and review intervals can be layered on later, as can time budgets based on measured/user-supplied durations. Neither is required by the current spacing mechanism.
+
+## Dependency security
+
+The dependency update uses patched Next.js 15, current Supabase clients, and Jest 30. Next.js request cookies, headers, and route parameters are awaited; Supabase uses the batch cookie API and forwards refresh cache headers. The scheduling equations and database migration are unchanged.
+
+Targeted npm overrides keep Next.js on the patched PostCSS 8 release, update the selector parser used by Tailwind 3, and let Istanbul's YAML loader use js-yaml 4's compatible `load` API without the vulnerable sprintf-js dependency. Revisit these overrides when upstream dependencies adopt those versions.
+
+One underlying advisory remains: `braces` GHSA-vfj7-8cjw-p6xm has no patched release and is pulled in by Tailwind 3's build/watch tooling. npm reports five high-severity entries because it also flags the four affected parent packages. These tools scan checked-in source files rather than user study content. Resolving this requires replacing that tooling or migrating Tailwind to v4; no audit suppression or forced downgrade is applied. Check current results with `npm audit` and `npm audit --omit=dev`.
