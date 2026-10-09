@@ -1,19 +1,16 @@
 import { GeistSans } from "geist/font/sans";
+import { Suspense } from "react";
+import AppShell from "@/components/AppShell";
 import "./globals.css";
-import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
-import { AppSidebar } from "@/components/AppSidebar";
-import AuthButton from "@/components/AuthButton";
-
-const defaultUrl = process.env.VERCEL_URL
-  ? `https://${process.env.VERCEL_URL}`
-  : "http://localhost:3000";
-
 export const metadata = {
-  metadataBase: new URL(defaultUrl),
-  title: "Exam Prep",
-  description: "Never cram for your exams again",
+  metadataBase: new URL(
+    process.env.VERCEL_URL
+      ? `https://${process.env.VERCEL_URL}`
+      : "http://localhost:3000",
+  ),
+  title: "Exam Prep · A little practice, a lot of progress",
+  description: "A personal study plan that grows with you.",
 };
-
 export default function RootLayout({
   children,
 }: {
@@ -22,19 +19,9 @@ export default function RootLayout({
   return (
     <html lang="en" className={GeistSans.className}>
       <body>
-        <SidebarProvider className="h-screen w-screen">
-          <AppSidebar />
-
-          <main className="h-full w-full">
-            <div className="flex flex-grow flex-col rounded-full">
-              <nav className="w-full flex h-24 justify-between items-center">
-                <SidebarTrigger />
-                <AuthButton />
-              </nav>
-              {children}
-            </div>
-          </main>
-        </SidebarProvider>
+        <Suspense fallback={<main>{children}</main>}>
+          <AppShell>{children}</AppShell>
+        </Suspense>
       </body>
     </html>
   );

@@ -1,15 +1,18 @@
 import { createClient } from "@/utils/supabase/server";
-import SelectForm from "./SelectForm";
 import { redirect } from "next/navigation";
-
-export default async function CreateExamPage() {
+import ExamEditor from "@/components/ExamEditor";
+export const dynamic = "force-dynamic";
+export default async function CreateExam() {
   const supabase = createClient();
   const {
     data: { user },
   } = await supabase.auth.getUser();
-  if (!user) {
-    return redirect("/login/");
-  }
-  
-  return <SelectForm user_id={user.id} />;
+  if (!user) redirect("/login");
+  const { data, error } = await supabase
+    .from("subjects")
+    .select("*")
+    .eq("user_id", user.id);
+  if (error)
+    throw new Error("We couldn’t load your subjects. Please try again.");
+  return <ExamEditor subjects={data ?? []} />;
 }

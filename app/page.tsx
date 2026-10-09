@@ -1,40 +1,46 @@
-import LoginButton from "@/components/LoginButton";
-import AuthButton from "../components/AuthButton";
+import Link from "next/link";
 import { createClient } from "@/utils/supabase/server";
-
 import { redirect } from "next/navigation";
-
-
-export default async function Index() {
-  const canInitSupabaseClient = () => {
-    // This function is just for the interactive tutorial.
-    // Feel free to remove it once you have Supabase connected.
-    try {
-      createClient();
-      return true;
-    } catch (e) {
-      return false;
-    }
-  };
-
-  const isSupabaseConnected = canInitSupabaseClient();
-
-  const supabase = createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-  console.log(user);
-  if (user) {
-    return redirect("/dashboard/");
+export default async function Home() {
+  try {
+    const {
+      data: { user },
+    } = await createClient().auth.getUser();
+    if (user) redirect("/dashboard");
+  } catch (error) {
+    if ((error as { digest?: string }).digest?.startsWith("NEXT_REDIRECT"))
+      throw error;
   }
-
-  
   return (
-    <div className="h-screen w-screen">
-      <div className="absolute bottom-0 right-0">
-        <h1 className="text-6xl">Never cram before an exam again</h1>
-        {isSupabaseConnected && <LoginButton />}
+    <section className="landing">
+      <span className="eyebrow">LESS CRAMMING. MORE CONFIDENCE.</span>
+      <h1>
+        A little practice.
+        <br />
+        <em>A lot of progress.</em>
+      </h1>
+      <p>
+        A study plan built around what you know, what needs a little love, and
+        when your exam is coming. One small step at a time.
+      </p>
+      <div className="button-row">
+        <Link className="primary-button" href="/login">
+          Build my study plan ↗
+        </Link>
+        <Link className="secondary-button" href="/demo">
+          Explore a sample plan
+        </Link>
       </div>
-    </div>
+      <div className="landing-features">
+        <span>✦ Confidence-based recommendations</span>
+        <span>↻ Spaced practice</span>
+        <span>◷ Your pace, your progress</span>
+      </div>
+      <div className="hero-art" aria-hidden="true">
+        <span>✦</span>
+        <i />
+        <b />
+      </div>
+    </section>
   );
 }

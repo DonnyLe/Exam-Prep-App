@@ -1,93 +1,46 @@
-<a href="https://demo-nextjs-with-supabase.vercel.app/">
-  <img alt="Next.js and Supabase Starter Kit - the fastest way to build apps with Next.js and Supabase" src="https://demo-nextjs-with-supabase.vercel.app/opengraph-image.png">
-  <h1 align="center">Next.js and Supabase Starter Kit</h1>
-</a>
+# Exam Prep
 
-<p align="center">
- The fastest way to build apps with Next.js and Supabase
-</p>
+A confidence-based study planner with daily recommendations, optional interleaving, a focus timer, and Supabase-backed exams and study history.
 
-<p align="center">
-  <a href="#features"><strong>Features</strong></a> ·
-  <a href="#demo"><strong>Demo</strong></a> ·
-  <a href="#deploy-to-vercel"><strong>Deploy to Vercel</strong></a> ·
-  <a href="#clone-and-run-locally"><strong>Clone and run locally</strong></a> ·
-  <a href="#feedback-and-issues"><strong>Feedback and issues</strong></a>
-  <a href="#more-supabase-examples"><strong>More Examples</strong></a>
-</p>
-<br/>
+## Run locally
 
-## Features
+Use Node 20 or newer. Install dependencies with `npm ci`, then add these values to `.env.local`:
 
-- Works across the entire [Next.js](https://nextjs.org) stack
-  - App Router
-  - Pages Router
-  - Middleware
-  - Client
-  - Server
-  - It just works!
-- supabase-ssr. A package to configure Supabase Auth to use cookies
-- Styling with [Tailwind CSS](https://tailwindcss.com)
-- Optional deployment with [Supabase Vercel Integration and Vercel deploy](#deploy-your-own)
-  - Environment variables automatically assigned to Vercel project
+```dotenv
+NEXT_PUBLIC_SUPABASE_URL=https://YOUR_PROJECT.supabase.co
+NEXT_PUBLIC_SUPABASE_ANON_KEY=YOUR_PUBLIC_ANON_KEY
+```
 
-## Demo
+Run `npm run dev`. Open `/demo` to explore a sample workspace without an account. Sample changes last only until the page reloads. Real exam creation and study completion require sign-in and the migration below.
 
-You can view a fully working demo at [demo-nextjs-with-supabase.vercel.app](https://demo-nextjs-with-supabase.vercel.app/).
+## Database setup
 
-## Deploy to Vercel
+This project originally used `profiles`, `subjects`, `exams`, `topics`, `subtopics`, and the three `studied_*_entry` tables described in `lib/supabase-types.ts`. The additive migration `supabase/migrations/202610090001_study_flow.sql` assumes those tables already exist. It preserves existing study material and history, adds `study_sessions`, and adds two authenticated RPCs:
 
-Vercel deployment will guide you through creating a Supabase account and project.
+- `save_study_exam(p jsonb)`: atomically creates/edits an exam and its material, checking ownership of existing IDs. Existing material is retained when editing; only unsaved rows can be removed in the editor.
+- `complete_study_session(p jsonb)`: atomically records confidence and elapsed study time, recalculates parent confidence, and writes existing confidence histories. A client-generated session ID makes retries idempotent.
 
-After installation of the Supabase integration, all relevant environment variables will be assigned to the project so the deployment is fully functioning.
+Apply the migration through the Supabase SQL editor or a linked Supabase CLI project. The live project must also have ownership policies for its original tables; review existing policies before deployment. The new session table permits authenticated users to read only their own sessions. Direct session writes are not granted; writes go through the ownership-checked RPC.
 
-[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Fvercel%2Fnext.js%2Ftree%2Fcanary%2Fexamples%2Fwith-supabase&project-name=nextjs-with-supabase&repository-name=nextjs-with-supabase&demo-title=nextjs-with-supabase&demo-description=This%20starter%20configures%20Supabase%20Auth%20to%20use%20cookies%2C%20making%20the%20user's%20session%20available%20throughout%20the%20entire%20Next.js%20app%20-%20Client%20Components%2C%20Server%20Components%2C%20Route%20Handlers%2C%20Server%20Actions%20and%20Middleware.&demo-url=https%3A%2F%2Fdemo-nextjs-with-supabase.vercel.app%2F&external-id=https%3A%2F%2Fgithub.com%2Fvercel%2Fnext.js%2Ftree%2Fcanary%2Fexamples%2Fwith-supabase&demo-image=https%3A%2F%2Fdemo-nextjs-with-supabase.vercel.app%2Fopengraph-image.png&integration-ids=oac_VqOgBHqhEoFTPzGkPd7L0iH6)
+The configured project hostname was unreachable during implementation, so the migration has not been applied or verified against the live database. Update the credentials to an active project before using cloud saves. Supabase Auth must permit your local/deployed callback URL.
 
-The above will also clone the Starter kit to your GitHub, you can clone that locally and develop locally.
+## Scheduling
 
-If you wish to just develop locally and not deploy to Vercel, [follow the steps below](#clone-and-run-locally).
+The original power trajectory (`exponent = 1.7`), confidence gain (`-0.5 * confidence + 5`), and priority formula (`70 / (confidence + 5) + 1.2 ^ daysSincePractice`) remain. Priorities are refreshed for all material each simulated day. Confidence stays in 0–10; allocation follows parent/child averages without upward rounding. Parent confidence is the equal-weight mean of its immediate children.
 
-## Clone and run locally
+Each projection starts from saved confidence and simulates completing recommendations. Projections are independent snapshots and never save predicted gains. Real confidence only changes after an explicit check-in or exam edit. Exam-day and expired exams are excluded from future study work. Topics that have reached the confidence goal may have no recommendations until the learner reports a lower score; this model does not simulate confidence decay.
 
-1. You'll first need a Supabase project which can be made [via the Supabase dashboard](https://database.new)
+“Mix topics” reorders selected work within each subject to alternate parent topics where possible. It does not add, remove, or change goals. The existing curve-combination optimizer remains available but disabled by default.
 
-2. Create a Next.js app using the Supabase Starter template npx command
+The timer is optional, uses an absolute deadline, and does not change topic selection or automatically complete sessions. Refreshing or leaving the workspace resets timer state. Confidence gains are planning estimates, not measured recall probabilities or guaranteed learning outcomes. Calendar dates use the browser timezone, shared with the server via a timezone cookie.
 
-   ```bash
-   npx create-next-app -e with-supabase
-   ```
+## Checks
 
-3. Use `cd` to change into the app's directory
+- `npm test -- --runInBand`: scheduler and interleaving assertions.
+- `npm run test:database`: local PostgreSQL migration/transaction checks using PGlite and the original table shape from the checked-in types. This does not verify the unavailable live project.
+- `npx tsc --noEmit --incremental false`: type check.
+- `npm run build`: production build.
 
-   ```bash
-   cd name-of-new-app
-   ```
+## Future improvements
 
-4. Rename `.env.local.example` to `.env.local` and update the following:
-
-   ```
-   NEXT_PUBLIC_SUPABASE_URL=[INSERT SUPABASE PROJECT URL]
-   NEXT_PUBLIC_SUPABASE_ANON_KEY=[INSERT SUPABASE PROJECT API ANON KEY]
-   ```
-
-   Both `NEXT_PUBLIC_SUPABASE_URL` and `NEXT_PUBLIC_SUPABASE_ANON_KEY` can be found in [your Supabase project's API settings](https://app.supabase.com/project/_/settings/api)
-
-5. You can now run the Next.js local development server:
-
-   ```bash
-   npm run dev
-   ```
-
-   The starter kit should now be running on [localhost:3000](http://localhost:3000/).
-
-> Check out [the docs for Local Development](https://supabase.com/docs/guides/getting-started/local-development) to also run Supabase locally.
-
-## Feedback and issues
-
-Please file feedback and issues over on the [Supabase GitHub org](https://github.com/supabase/supabase/issues/new/choose).
-
-## More Supabase examples
-
-- [Next.js Subscription Payments Starter](https://github.com/vercel/nextjs-subscription-payments)
-- [Cookie-based Auth and the Next.js 13 App Router (free course)](https://youtube.com/playlist?list=PL5S4mPUpp4OtMhpnp93EFSo42iQ40XjbF)
-- [Supabase Auth and the Next.js App Router](https://github.com/supabase/supabase/tree/master/examples/auth/nextjs)
+Collect real sessions before tuning the gain equation or trajectory exponent. Compare recommended work with actual confidence changes and elapsed time. Explicit recall feedback and review intervals can be layered on later, as can time budgets based on measured/user-supplied durations. Neither is required by the current spacing mechanism.
