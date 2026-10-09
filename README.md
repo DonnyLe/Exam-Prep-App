@@ -4,7 +4,7 @@ A confidence-based study planner with daily recommendations, optional interleavi
 
 ## Run locally
 
-Use Node 20 or newer. Install dependencies with `npm ci`, then add these values to `.env.local`:
+Use Node 24 LTS. With nvm, run `nvm install` and `nvm use` from the project directory (the version is selected by `.nvmrc`). Install dependencies with `npm ci`, then add these values to `.env.local`:
 
 ```dotenv
 NEXT_PUBLIC_SUPABASE_URL=https://YOUR_PROJECT.supabase.co
