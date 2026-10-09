@@ -8,7 +8,7 @@ Use Node 24 LTS. With nvm, run `nvm install` and `nvm use` from the project dire
 
 ```dotenv
 NEXT_PUBLIC_SUPABASE_URL=https://YOUR_PROJECT.supabase.co
-NEXT_PUBLIC_SUPABASE_ANON_KEY=YOUR_PUBLIC_ANON_KEY
+NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=YOUR_PUBLISHABLE_KEY
 ```
 
 Run `npm run dev`. Open `/demo` to explore a sample workspace without an account. Sample changes last only until the page reloads. Real exam creation and study completion require sign-in and the migration below.
