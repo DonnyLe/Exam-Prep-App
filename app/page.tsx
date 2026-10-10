@@ -5,7 +5,7 @@ export default async function Home() {
   try {
     const {
       data: { user },
-    } = await createClient().auth.getUser();
+    } = await (await createClient()).auth.getUser();
     if (user) redirect("/dashboard");
   } catch (error) {
     if ((error as { digest?: string }).digest?.startsWith("NEXT_REDIRECT"))

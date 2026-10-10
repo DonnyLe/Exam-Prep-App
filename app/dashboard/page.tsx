@@ -7,11 +7,11 @@ export const dynamic = "force-dynamic";
 export default async function Dashboard({
   searchParams,
 }: {
-  searchParams: { view?: string };
+  searchParams: Promise<{ view?: string }>;
 }) {
   const data = await loadStudyData();
   if (!data.user) redirect("/login");
-  const today = studyToday();
+  const today = await studyToday();
   const schedule = await generateFullSchedule(
     data.exams,
     today,
@@ -25,7 +25,7 @@ export default async function Dashboard({
       sessions={data.sessions}
       schedule={scheduleItems(schedule, data.exams)}
       today={today}
-      view={searchParams.view ?? "today"}
+      view={(await searchParams).view ?? "today"}
       error={data.error}
     />
   );

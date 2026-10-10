@@ -8,7 +8,7 @@ export async function saveStudyExam(input: unknown) {
   if (!parsed.success) return { error: parsed.error.issues[0].message };
   if (parsed.data.exam_date <= localDate())
     return { error: "Choose an exam date after today." };
-  const supabase = createClient();
+  const supabase = await createClient();
   const {
     data: { user },
   } = await supabase.auth.getUser();
@@ -28,7 +28,7 @@ export async function completeStudySession(input: unknown) {
   const parsed = sessionInput.safeParse(input);
   if (!parsed.success)
     return { error: "Check your confidence score and session details." };
-  const supabase = createClient();
+  const supabase = await createClient();
   const {
     data: { user },
   } = await supabase.auth.getUser();

@@ -7,15 +7,16 @@ import { SubmitButton } from "./submit-button";
 export default async function Login({
   searchParams,
 }: {
-  searchParams: { message: string };
+  searchParams: Promise<{ message?: string }>;
 }) {
+  const { message } = await searchParams;
   const {
     data: { user: currentUser },
-  } = await createClient().auth.getUser();
+  } = await (await createClient()).auth.getUser();
   if (currentUser) {
     const signOut = async () => {
       "use server";
-      await createClient().auth.signOut();
+      await (await createClient()).auth.signOut();
       redirect("/");
     };
     return (
@@ -36,7 +37,7 @@ export default async function Login({
 
     const email = formData.get("email") as string;
     const password = formData.get("password") as string;
-    const supabase = createClient();
+    const supabase = await createClient();
 
     const { error } = await supabase.auth.signInWithPassword({
       email,
@@ -58,10 +59,10 @@ export default async function Login({
   const signUp = async (formData: FormData) => {
     "use server";
 
-    const origin = headers().get("origin");
+    const origin = (await headers()).get("origin");
     const email = formData.get("email") as string;
     const password = formData.get("password") as string;
-    const supabase = createClient();
+    const supabase = await createClient();
 
     const { error } = await supabase.auth.signUp({
       email,
@@ -140,9 +141,9 @@ export default async function Login({
         >
           Sign Up
         </SubmitButton>
-        {searchParams?.message && (
+        {message && (
           <p className="mt-4 p-4 bg-foreground/10 text-foreground text-center">
-            {searchParams.message}
+            {message}
           </p>
         )}
       </form>
